@@ -2,7 +2,7 @@
 Collection of shaders for [ReShade](https://reshade.me/).
 
 ## 1. Prerequisites
-- [ReShade](https://reshade.me/)
+- [ReShade](https://reshade.me/): https://reshade.me/
 
 ## 2. Installation
 - Install [ReShade](https://reshade.me/) in your game (follow [ReShade](https://reshade.me/) installation instructions).
