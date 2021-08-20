@@ -675,7 +675,7 @@ technique FGFXFCSB16X <
     pass VBlurC0US {
 		VertexShader = PostProcessVS;
 		PixelShader  = VBlurC0PS;
-		// RenderTarget id back-buffer
+		// RenderTarget is back-buffer
 	}
 
 #endif
@@ -685,7 +685,7 @@ technique FGFXFCSB16X <
 	pass CopyHexaBlur {
 		VertexShader = PostProcessVS;
 		PixelShader  = CopyHexaPS;
-		// RenderTarget id back-buffer
+		// RenderTarget is back-buffer
 	}
 
 #endif // FCSB16X_BLUR_ON
