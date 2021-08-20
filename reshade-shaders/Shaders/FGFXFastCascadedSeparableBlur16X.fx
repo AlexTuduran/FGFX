@@ -245,9 +245,9 @@ static const float2 ___SCALED_BUFFER_SIZE_DIVIDER_DIVIDER_COMPENSATION_OFFSET___
 // accounts for all pixels in the back-buffer, hence free of any aliasing
 // -------------------------------------------------------------------------- //
 
-float4 CopyBBPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): COLOR {
+float3 CopyBBPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): COLOR {
     // if writing to a half-sized texture, this returns the average of 4 neighbour texels
-    return tex2D(ReShade::BackBuffer, texcoord.xy);
+    return tex2D(ReShade::BackBuffer, texcoord.xy).rgb;
 }
 
 float3 CopyHalfPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): COLOR {
