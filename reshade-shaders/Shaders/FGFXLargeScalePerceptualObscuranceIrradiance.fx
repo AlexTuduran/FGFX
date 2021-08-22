@@ -85,71 +85,71 @@
 // -------------------------------------------------------------------------- //
 
 uniform int ___ABOUT <
-	ui_type = "radio";
-	ui_label = " ";
-	ui_category = "About";
-	ui_text =
-		"-=[ FGFX::LSPOIrr - Large Scale Perceptual Obscurance and Irradiance ]=-\n"
-		"\n"
+    ui_type = "radio";
+    ui_label = " ";
+    ui_category = "About";
+    ui_text =
+        "-=[ FGFX::LSPOIrr - Large Scale Perceptual Obscurance and Irradiance ]=-\n"
+        "\n"
 
-		"The Large Scale Perceptual Obscurance and Irradiance is a post-processing "
-		"effect that attempts to inject obscurance and irradiance in the scene at a "
-		"large scale (low frequency).\n"
-		"\n"
+        "The Large Scale Perceptual Obscurance and Irradiance is a post-processing "
+        "effect that attempts to inject obscurance and irradiance in the scene at a "
+        "large scale (low frequency).\n"
+        "\n"
 
-		"Due to the fact that the effect operates on the low frequencies of the "
-		"input image, the effect often plays just on a perceptual level rather "
-		"than being an actual physically correct rendition of scene obscurrance and "
-		"irradiance.\n"
-		"\n"
+        "Due to the fact that the effect operates on the low frequencies of the "
+        "input image, the effect often plays just on a perceptual level rather "
+        "than being an actual physically correct rendition of scene obscurrance and "
+        "irradiance.\n"
+        "\n"
 
-		"* How does it work? *\n"
-		"\n"
+        "* How does it work? *\n"
+        "\n"
 
-		"The concept sitting at the core of the effect is really simple and relies "
-		"on some assumptions that more than often are correct. If we take an "
-		"arbitrary image, blur it with a large gaussian and then overlay (as in "
-		"standard overlay blending operation) the blurred image onto the original "
-		"image, we get the illusion that some statistically-correct occlusion and "
-		" irradiance show up in the image.\n"
-		"\n"
+        "The concept sitting at the core of the effect is really simple and relies "
+        "on some assumptions that more than often are correct. If we take an "
+        "arbitrary image, blur it with a large gaussian and then overlay (as in "
+        "standard overlay blending operation) the blurred image onto the original "
+        "image, we get the illusion that some statistically-correct occlusion and "
+        " irradiance show up in the image.\n"
+        "\n"
 
-		"* Why does it work? *\n"
-		"\n"
+        "* Why does it work? *\n"
+        "\n"
 
-		"The effect relies on the statistical fact that if there's a part in the "
-		"input image that is predominantly dark, chances are that the entire part "
-		"contains objects that obscure each other, reducing the amount of light "
-		"radiated in that particular area.\n"
-		"\n"
+        "The effect relies on the statistical fact that if there's a part in the "
+        "input image that is predominantly dark, chances are that the entire part "
+        "contains objects that obscure each other, reducing the amount of light "
+        "radiated in that particular area.\n"
+        "\n"
 
-		"Admittedly, the opposite is also true: If a part of the input image is "
-		"predominantly bright, chances are that the objects in that part of the "
-		"image has an increase amount of light inter-radiation, as a result of "
-		"objects in that part of the image radiating each other.\n"
-		"\n"
+        "Admittedly, the opposite is also true: If a part of the input image is "
+        "predominantly bright, chances are that the objects in that part of the "
+        "image has an increase amount of light inter-radiation, as a result of "
+        "objects in that part of the image radiating each other.\n"
+        "\n"
 
         "* What about performance? *\n"
-		"\n"
+        "\n"
 
-		"The implementation uses the Fast Cascaded Separable Blur technique, "
-		"which is blazing-fast. The entire effect executes in less than 0.35 ms "
-		"on a machine with a i7-8700K running at 4.2Ghz CPU and a GTX 1080Ti "
-		"running at 2000Mhz GPU in 2560x1440 resolution.\n"
-		"\n"
+        "The implementation uses the Fast Cascaded Separable Blur technique, "
+        "which is blazing-fast. The entire effect executes in less than 0.35 ms "
+        "on a machine with a i7-8700K running at 4.2Ghz CPU and a GTX 1080Ti "
+        "running at 2000Mhz GPU in 2560x1440 resolution.\n"
+        "\n"
 
-		"And if you're think you don't need the auto-gain feature (by disabling "
-		"it in preprocessor definitions), you can cut 0.05 ms and get the total "
-		"execution time down to 0.3 ms.\n"
-		"\n"
+        "And if you're think you don't need the auto-gain feature (by disabling "
+        "it in preprocessor definitions), you can cut 0.05 ms and get the total "
+        "execution time down to 0.3 ms.\n"
+        "\n"
 
         "* Where is this effect best placed? *\n"
-		"\n"
+        "\n"
 
-		"Since the effect addresses the lighting in the scene, it's best put "
-		"after any Global Illumination technique like Ambient Occlusion, "
-		"Obscurance, RTGI and before tone-mapping, film grain, color grading "
-		"of any sort, bloom, CA or any lens / sensor effects.\n";
+        "Since the effect addresses the lighting in the scene, it's best put "
+        "after any Global Illumination technique like Ambient Occlusion, "
+        "Obscurance, RTGI and before tone-mapping, film grain, color grading "
+        "of any sort, bloom, CA or any lens / sensor effects.\n";
 >;
 
 // -------------------------------------------------------------------------- //
@@ -159,41 +159,41 @@ uniform int ___ABOUT <
 #define ___CATEGORY_EFFECT_SETTINGS___ "Effect Settings"
 
 uniform bool LSPOIrrEffectEnabled <
-	ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
     ui_label = "Effect Enabled";
     ui_tooltip = "Enables / disables the effect entirely.";
 > = true;
 
 uniform float LSPOIrrEffectIntensity < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 1.0;
-	ui_category = ___CATEGORY_EFFECT_SETTINGS___;
-	ui_label = "Effect Intensity";
-	ui_tooltip = "Adjusts the overall intensity of the effect.";
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Effect Intensity";
+    ui_tooltip = "Adjusts the overall intensity of the effect.";
 > = 0.9;
 
 uniform float LSPOIrrEffectRadius < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.25;
-	ui_max = 1.00;
-	ui_category = ___CATEGORY_EFFECT_SETTINGS___;
-	ui_label = "Effect Radius";
-	ui_tooltip = "Adjusts the radius of the effect.";
+    ui_min = 0.25;
+    ui_max = 1.00;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Effect Radius";
+    ui_tooltip = "Adjusts the radius of the effect.";
 > = 0.65;
 
 uniform float LSPOIrrEffectSaturation < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 1.0;
-	ui_category = ___CATEGORY_EFFECT_SETTINGS___;
-	ui_label = "Effect Saturation";
-	ui_tooltip = "Adjusts the saturation of the resulting irradiance.";
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Effect Saturation";
+    ui_tooltip = "Adjusts the saturation of the resulting irradiance.";
 > = 0.25;
 
 uniform float LSPOIrrShHlRecovery < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 1.0;
-	ui_category = ___CATEGORY_EFFECT_SETTINGS___;
-	ui_label = "Shadows / Highlights Recovery";
-	ui_tooltip = "Adjusts the recovery applied to shadows and highlights.";
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Shadows / Highlights Recovery";
+    ui_tooltip = "Adjusts the recovery applied to shadows and highlights.";
 > = 0.75;
 
 // -------------------------------------------------------------------------- //
@@ -205,61 +205,61 @@ uniform float LSPOIrrShHlRecovery < __UNIFORM_SLIDER_FLOAT1
 #if LSPOIRR_AUTO_GAIN_ENABLED
 
 uniform float LSPOIrrAutoGain < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 1.0;
-	ui_category = ___CATEGORY_TONING_SETTINGS___;
-	ui_label = "Auto-Gain";
-	ui_tooltip = "Adjusts the influence of auto-gain.";
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_TONING_SETTINGS___;
+    ui_label = "Auto-Gain";
+    ui_tooltip = "Adjusts the influence of auto-gain.";
 > = 0.5;
 
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
 uniform float LSPOIrrGamma < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.10;
-	ui_max = 4.00;
-	ui_category = ___CATEGORY_TONING_SETTINGS___;
-	ui_label = "Gamma";
-	ui_tooltip = "Adjusts the gamma of the final result.";
+    ui_min = 0.10;
+    ui_max = 4.00;
+    ui_category = ___CATEGORY_TONING_SETTINGS___;
+    ui_label = "Gamma";
+    ui_tooltip = "Adjusts the gamma of the final result.";
 > = 1.0;
 
 uniform float LSPOIrrGain < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 4.0;
-	ui_category = ___CATEGORY_TONING_SETTINGS___;
-	ui_label = "Gain";
-	ui_tooltip = "Adjusts the gain of the final result.";
+    ui_min = 0.0;
+    ui_max = 4.0;
+    ui_category = ___CATEGORY_TONING_SETTINGS___;
+    ui_label = "Gain";
+    ui_tooltip = "Adjusts the gain of the final result.";
 > = 1.0;
 
 uniform float LSPOIrrContrast < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 1.0;
-	ui_category = ___CATEGORY_TONING_SETTINGS___;
-	ui_label = "Contrast";
-	ui_tooltip = "Adjusts the contrast of the final result.";
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_TONING_SETTINGS___;
+    ui_label = "Contrast";
+    ui_tooltip = "Adjusts the contrast of the final result.";
 > = 1.0;
 
 uniform float LSPOIrrSaturation < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 2.0;
-	ui_category = ___CATEGORY_TONING_SETTINGS___;
-	ui_label = "Saturation";
-	ui_tooltip = "Adjusts the saturation of the final result.";
+    ui_min = 0.0;
+    ui_max = 2.0;
+    ui_category = ___CATEGORY_TONING_SETTINGS___;
+    ui_label = "Saturation";
+    ui_tooltip = "Adjusts the saturation of the final result.";
 > = 1.0;
 
 uniform float LSPOIrrRaiseShadowsAmount < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 0.2; // update @___RAISE_SHADOWS_AMOUNT_MAX___
-	ui_category = ___CATEGORY_TONING_SETTINGS___;
-	ui_label = "Raise Shadows Amount";
-	ui_tooltip = "Adjusts the intensity of the darker areas in the final image.";
+    ui_min = 0.0;
+    ui_max = 0.2; // update @___RAISE_SHADOWS_AMOUNT_MAX___
+    ui_category = ___CATEGORY_TONING_SETTINGS___;
+    ui_label = "Raise Shadows Amount";
+    ui_tooltip = "Adjusts the intensity of the darker areas in the final image.";
 > = 0.0;
 
 uniform float LSPOIrrRaisedShadowsSaturation < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.0;
-	ui_max = 1.0;
-	ui_category = ___CATEGORY_TONING_SETTINGS___;
-	ui_label = "Raised Shadows Saturation";
-	ui_tooltip = "Adjusts the saturation of the darker areas in the final image.";
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_TONING_SETTINGS___;
+    ui_label = "Raised Shadows Saturation";
+    ui_tooltip = "Adjusts the saturation of the darker areas in the final image.";
 > = 0.25;
 
 // -------------------------------------------------------------------------- //
@@ -272,24 +272,24 @@ uniform int LSPOIrrDebugType <
 
 #if LSPOIRR_AUTO_GAIN_ENABLED
     ui_items =
-		"None\0"
-		"Raw Blur\0"
-		"Saturated Blur\0"
-		"Blur Max Samples Positions\0"
-		"Blur Max\0"
-		"Blur Gain\0"
-		"Gained Blur\0"
-		"Raise Shadow Function Plot\0"
-		"No Toning\0"
-		"No Intensity\0";
+        "None\0"
+        "Raw Blur\0"
+        "Saturated Blur\0"
+        "Blur Max Samples Positions\0"
+        "Blur Max\0"
+        "Blur Gain\0"
+        "Gained Blur\0"
+        "Raise Shadow Function Plot\0"
+        "No Toning\0"
+        "No Intensity\0";
 #else // LSPOIRR_AUTO_GAIN_ENABLED
     ui_items =
-		"None\0"
-		"Raw Blur\0"
-		"Saturated Blur\0"
-		"Raise Shadow Function Plot\0"
-		"No Toning\0"
-		"No Intensity\0";
+        "None\0"
+        "Raw Blur\0"
+        "Saturated Blur\0"
+        "Raise Shadow Function Plot\0"
+        "No Toning\0"
+        "No Intensity\0";
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
     ui_label = "Debug Type";
@@ -783,18 +783,18 @@ float3 Hash32UV(in float2 uv, in float step) {
 
 float OverlayBlend(in float a, in float b) {
     [branch]
-	if (a < 0.5) {
-	    return a * b * 2.0;
-	} else {
-	    return 1.0 - (1.0 - a) * (1.0 - b) * 2.0;
-	}
+    if (a < 0.5) {
+        return a * b * 2.0;
+    } else {
+        return 1.0 - (1.0 - a) * (1.0 - b) * 2.0;
+    }
 }
 
 float3 OverlayBlend(in float3 a, in float3 b) {
-	return float3(
-	    OverlayBlend(a.r, b.r),
-	    OverlayBlend(a.g, b.g),
-	    OverlayBlend(a.b, b.b)
+    return float3(
+        OverlayBlend(a.r, b.r),
+        OverlayBlend(a.g, b.g),
+        OverlayBlend(a.b, b.b)
     );
 }
 
@@ -806,66 +806,66 @@ float3 OverlayBlend(in float3 a, in float3 b) {
 
 float ComputeBlurMaxChannel(in float2 texcoord) {
 #if 0
-	// debug
+    // debug
     if (1) {
-	    return tex2D(ReShade::BackBuffer, texcoord).r;
-	}
+        return tex2D(ReShade::BackBuffer, texcoord).r;
+    }
 #endif
 
-	float maxChannel = 0;
+    float maxChannel = 0;
     float2 uv = float2(___MAX_BLUR_POS_SAMPLE_START___, ___MAX_BLUR_POS_SAMPLE_START___);
 
-	[unroll]
-	for (int i = 0; i < ___MAX_BLUR_NUM_SAMPLES___; i++) {
-    	uv.x = ___MAX_BLUR_POS_SAMPLE_START___;
+    [unroll]
+    for (int i = 0; i < ___MAX_BLUR_NUM_SAMPLES___; i++) {
+        uv.x = ___MAX_BLUR_POS_SAMPLE_START___;
 
-    	[unroll]
+        [unroll]
         for (int j = 0; j < ___MAX_BLUR_NUM_SAMPLES___; j++) {
-			maxChannel = max(maxChannel, COMPUTE_COLOR_MAX_CHANNEL(tex2D(VBlurSampler, uv).rgb));
-			uv.x += ___MAX_BLUR_POS_SAMPLE_STEP___;
-		}
+            maxChannel = max(maxChannel, COMPUTE_COLOR_MAX_CHANNEL(tex2D(VBlurSampler, uv).rgb));
+            uv.x += ___MAX_BLUR_POS_SAMPLE_STEP___;
+        }
 
-    	uv.y += ___MAX_BLUR_POS_SAMPLE_STEP___;
+        uv.y += ___MAX_BLUR_POS_SAMPLE_STEP___;
     }
 
 #if 0 // debug history persistence
-	maxChannel = Hash32UV(texcoord, ___HASH_TIME_STEP___).r;
+    maxChannel = Hash32UV(texcoord, ___HASH_TIME_STEP___).r;
 #endif
 
-	maxChannel *= ___MAX_CHANNEL_COMPENSATION___; // compensate for the sampling error that emerges from using just the center of the image
+    maxChannel *= ___MAX_CHANNEL_COMPENSATION___; // compensate for the sampling error that emerges from using just the center of the image
 
-	return maxChannel;
+    return maxChannel;
 }
 
 float3 DrawBlurMaxSamplesPositions(in float2 texcoord) {
-	float3 color = 0;
-	float2 uv = float2(___MAX_BLUR_POS_SAMPLE_START___, ___MAX_BLUR_POS_SAMPLE_START___);
+    float3 color = 0;
+    float2 uv = float2(___MAX_BLUR_POS_SAMPLE_START___, ___MAX_BLUR_POS_SAMPLE_START___);
 
-	[unroll]
-	for (int i = 0; i < ___MAX_BLUR_NUM_SAMPLES___; i++) {
-    	uv.x = ___MAX_BLUR_POS_SAMPLE_START___;
+    [unroll]
+    for (int i = 0; i < ___MAX_BLUR_NUM_SAMPLES___; i++) {
+        uv.x = ___MAX_BLUR_POS_SAMPLE_START___;
 
-    	[unroll]
+        [unroll]
         for (int j = 0; j < ___MAX_BLUR_NUM_SAMPLES___; j++) {
-        	float xDist = uv.x - texcoord.x;
-        	xDist *= ReShade::AspectRatio;
-        	float yDist = uv.y - texcoord.y;
-			float dist = xDist * xDist + yDist * yDist;
-			dist = sqrt(dist);
+            float xDist = uv.x - texcoord.x;
+            xDist *= ReShade::AspectRatio;
+            float yDist = uv.y - texcoord.y;
+            float dist = xDist * xDist + yDist * yDist;
+            dist = sqrt(dist);
 
-			dist = 1.0 - dist;
-			dist = saturate(dist);
-			dist = pow(dist, 100.0);
+            dist = 1.0 - dist;
+            dist = saturate(dist);
+            dist = pow(dist, 100.0);
 
-			dist = dist > 0.5 ? 0.5 : 0;
-			color += float3(dist, 0, 0);
-			uv.x += ___MAX_BLUR_POS_SAMPLE_STEP___;
-		}
+            dist = dist > 0.5 ? 0.5 : 0;
+            color += float3(dist, 0, 0);
+            uv.x += ___MAX_BLUR_POS_SAMPLE_STEP___;
+        }
 
-    	uv.y += ___MAX_BLUR_POS_SAMPLE_STEP___;
+        uv.y += ___MAX_BLUR_POS_SAMPLE_STEP___;
     }
 
-	return color;
+    return color;
 }
 
 float ComputeBlurGain(in float blurMax, in float minThreshold) {
@@ -874,7 +874,7 @@ float ComputeBlurGain(in float blurMax, in float minThreshold) {
         return blurMax / (minThreshold * minThreshold);
     } else {
         return 1.0 / blurMax;
-	}
+    }
 }
 
 float ComputeBlurMaxPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : COLOR {
@@ -888,7 +888,7 @@ float ComputeBlurMaxPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOOR
 // -------------------------------------------------------------------------- //
 
 float RaiseShadows(in float x, in float level) {
-	x = saturate(x);
+    x = saturate(x);
     float g = pow(x, 1.0 - pow(saturate(level), ___HALF_SQRT_TWO___));
     float t = SMOOTHSTEP_QUINTIC_INTERPOLANT(pow(x, level));
     t = SMOOTHSTEP_QUINTIC_INTERPOLANT(t);
@@ -920,22 +920,22 @@ float3 RaiseShadows2X(in float3 color, in float level) {
 // -------------------------------------------------------------------------- //
 
 float3 PlotRaiseShadowsFunction(in float2 texcoord) {
-	float x = texcoord.x;
-	float y = RaiseShadows2X(x, LSPOIrrRaiseShadowsAmount);
-	y = 1.0 - y; // (0, 0) is top-left
-	float dist = distance(texcoord, float2(x, y));
-	dist = 1.0 - dist;
-	dist = saturate(dist);
-	dist = pow(dist, 400.0);
-	dist += 0.0025;
-	dist = saturate(dist);
-	dist = pow(dist, 10.0);
-	dist *= 1000.0;
-	dist = saturate(dist);
+    float x = texcoord.x;
+    float y = RaiseShadows2X(x, LSPOIrrRaiseShadowsAmount);
+    y = 1.0 - y; // (0, 0) is top-left
+    float dist = distance(texcoord, float2(x, y));
+    dist = 1.0 - dist;
+    dist = saturate(dist);
+    dist = pow(dist, 400.0);
+    dist += 0.0025;
+    dist = saturate(dist);
+    dist = pow(dist, 10.0);
+    dist *= 1000.0;
+    dist = saturate(dist);
 #if 0
-	dist = dist > 0.05 ? 1 : 0;
+    dist = dist > 0.05 ? 1 : 0;
 #endif
-	return float3(dist, 0, 0);
+    return float3(dist, 0, 0);
 }
 
 // -------------------------------------------------------------------------- //
@@ -947,43 +947,43 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 
     // early exit
     [branch]
-	if (!LSPOIrrEffectEnabled) {
-		return color;
-	}
+    if (!LSPOIrrEffectEnabled) {
+        return color;
+    }
 
     // we need the original color later
     float3 finalColor = color;
 
     // sample blur as overlay color
 #if 1   
-	float3 overlayColor = tex2D(VBlurSampler, screenUV).rgb;
+    float3 overlayColor = tex2D(VBlurSampler, screenUV).rgb;
 #else
-	float3 overlayColor = tex2D(ShortBlurSampler, screenUV).rgb;
+    float3 overlayColor = tex2D(ShortBlurSampler, screenUV).rgb;
 #endif
 
     // debug
     [branch]
-	if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_RAW_BLUR___) {
-	    return overlayColor;
-	}
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_RAW_BLUR___) {
+        return overlayColor;
+    }
 
     // saturate the overlay color
     overlayColor = SATURATE_COLOR(overlayColor, LSPOIrrEffectSaturation);
 
     // debug
     [branch]
-	if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_SATURATED_BLUR___) {
-	    return overlayColor;
-	}
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_SATURATED_BLUR___) {
+        return overlayColor;
+    }
 
 #if LSPOIRR_AUTO_GAIN_ENABLED
 
     // debug
     [branch]
-	if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_BLUR_MAX_SAMPLES_POSITIONS___) {
-	    float3 samplesPositionColor = DrawBlurMaxSamplesPositions(screenUV);
-	    return samplesPositionColor.r < 0.01 ? color : samplesPositionColor;
-	}
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_BLUR_MAX_SAMPLES_POSITIONS___) {
+        float3 samplesPositionColor = DrawBlurMaxSamplesPositions(screenUV);
+        return samplesPositionColor.r < 0.01 ? color : samplesPositionColor;
+    }
 
     // get the damped blur max from history buffer
     float blurMax = tex2D(BlurMaxHistorySampler, screenUV).r;
@@ -1013,9 +1013,9 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 
     // debug
     [branch]
-	if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_GAINED_BLUR___) {
-	    return overlayColor;
-	}
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_GAINED_BLUR___) {
+        return overlayColor;
+    }
 
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
@@ -1024,29 +1024,29 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 
     // compute recovery overlay
     float3 recoveryOverlayColor = tex2D(ShortBlurSampler, screenUV).rgb;
-	recoveryOverlayColor = SATURATE_COLOR(recoveryOverlayColor, 0.0);
-	recoveryOverlayColor = 1.0 - recoveryOverlayColor;
-	recoveryOverlayColor = (recoveryOverlayColor - 0.5) * LSPOIrrShHlRecovery + 0.5;
+    recoveryOverlayColor = SATURATE_COLOR(recoveryOverlayColor, 0.0);
+    recoveryOverlayColor = 1.0 - recoveryOverlayColor;
+    recoveryOverlayColor = (recoveryOverlayColor - 0.5) * LSPOIrrShHlRecovery + 0.5;
 
-    // overlay the recovery overlay color onto the scene color	
+    // overlay the recovery overlay color onto the scene color  
     finalColor = OverlayBlend(finalColor, recoveryOverlayColor);
 
     // debug
     [branch]
-	if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_NO_TONING___) {
-	    return finalColor;
-	}
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_NO_TONING___) {
+        return finalColor;
+    }
 
-	// apply gamma
+    // apply gamma
     finalColor = pow(max(0.0, finalColor), LSPOIrrGamma);
 
-	// apply gain
+    // apply gain
     finalColor *= LSPOIrrGain;
 
-	// apply contrast
+    // apply contrast
     finalColor = (finalColor - 0.5) * LSPOIrrContrast + 0.5;
 
-	// apply saturation
+    // apply saturation
     finalColor = SATURATE_COLOR(finalColor, LSPOIrrSaturation);
 
     // back-up the final color for comparison
@@ -1067,16 +1067,16 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 
     // debug
     [branch]
-	if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_RAISE_SHADOWS_FUNCTION_PLOT___) {
-	    float3 plotColor = PlotRaiseShadowsFunction(screenUV);
-	    return plotColor.r < 0.01 ? finalColor : plotColor;
-	}
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_RAISE_SHADOWS_FUNCTION_PLOT___) {
+        float3 plotColor = PlotRaiseShadowsFunction(screenUV);
+        return plotColor.r < 0.01 ? finalColor : plotColor;
+    }
 
     // debug
     [branch]
-	if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_NO_INTENSITY___) {
-	    return finalColor;
-	}
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_NO_INTENSITY___) {
+        return finalColor;
+    }
 
     // apply intensity
     finalColor = lerp(color, finalColor, LSPOIrrEffectIntensity);
@@ -1090,16 +1090,16 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 
 float BlendBlurMaxIntoHistoryPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : COLOR {
     float blurMax = tex2D(BlurMaxSampler, texcoord).r;
-	float blurMaxHistory = tex2D(BlurMaxHistorySampler, texcoord).r;
+    float blurMaxHistory = tex2D(BlurMaxHistorySampler, texcoord).r;
 
     // apply Exponential Moving Average Infinite Impulse Response low-pass filter
-	blurMaxHistory = lerp(blurMaxHistory, blurMax, LSPOIRR_AUTO_GAIN_SPEED);
+    blurMaxHistory = lerp(blurMaxHistory, blurMax, LSPOIRR_AUTO_GAIN_SPEED);
 
     return blurMaxHistory;
 }
 
 float CopyBlurMaxHistoryTempPS(in float4 vpos : SV_Position, in float2 texcoord : TEXCOORD) : COLOR {
-	return tex2D(BlurMaxHistoryTempSampler, texcoord).r;
+    return tex2D(BlurMaxHistoryTempSampler, texcoord).r;
 }
 
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
@@ -1107,76 +1107,76 @@ float CopyBlurMaxHistoryTempPS(in float4 vpos : SV_Position, in float2 texcoord 
 // -------------------------------------------------------------------------- //
 
 technique FGFXLSPOIrr <
-	ui_label = "FGFX::LSPOIrr";
-	ui_tooltip =
-		"+------------------------------------------------------------------------+\n"
-		"|-=[ FGFX::LSPOIrr - Large Scale Perceptual Obscurance and Irradiance ]=-|\n"
-		"+------------------------------------------------------------------------+\n"
-		"\n"
+    ui_label = "FGFX::LSPOIrr";
+    ui_tooltip =
+        "+------------------------------------------------------------------------+\n"
+        "|-=[ FGFX::LSPOIrr - Large Scale Perceptual Obscurance and Irradiance ]=-|\n"
+        "+------------------------------------------------------------------------+\n"
+        "\n"
 
-		"The Large Scale Perceptual Obscurance and Irradiance is a post-processing\n"
-		"effect that attempts to inject obscurance and irradiance in the scene at a\n"
-		"large scale (low frequency).\n"
-		"\n"
+        "The Large Scale Perceptual Obscurance and Irradiance is a post-processing\n"
+        "effect that attempts to inject obscurance and irradiance in the scene at a\n"
+        "large scale (low frequency).\n"
+        "\n"
 
-		"Due to the fact that the effect operates on the low frequencies of the\n"
-		"input image, the effect often plays just on a perceptual level rather\n"
-		"than being an actual physically correct rendition of scene obscurrance and\n"
-		"irradiance.\n"
-		"\n"
+        "Due to the fact that the effect operates on the low frequencies of the\n"
+        "input image, the effect often plays just on a perceptual level rather\n"
+        "than being an actual physically correct rendition of scene obscurrance and\n"
+        "irradiance.\n"
+        "\n"
 
-		"* How does it work? *\n"
-		"\n"
+        "* How does it work? *\n"
+        "\n"
 
-		"The concept sitting at the core of the effect is really simple and relies\n"
-		"on some assumptions that more than often are correct. If we take an\n"
-		"arbitrary image, blur it with a large gaussian and then overlay (as in\n"
-		"standard overlay blending operation) the blurred image onto the original\n"
-		"image, we get the illusion that some statistically-correct occlusion and\n"
-		" irradiance show up in the image.\n"
-		"\n"
+        "The concept sitting at the core of the effect is really simple and relies\n"
+        "on some assumptions that more than often are correct. If we take an\n"
+        "arbitrary image, blur it with a large gaussian and then overlay (as in\n"
+        "standard overlay blending operation) the blurred image onto the original\n"
+        "image, we get the illusion that some statistically-correct occlusion and\n"
+        " irradiance show up in the image.\n"
+        "\n"
 
-		"* Why does it work? *\n"
-		"\n"
+        "* Why does it work? *\n"
+        "\n"
 
-		"The effect relies on the statistical fact that if there's a part in the\n"
-		"input image that is predominantly dark, chances are that the entire part\n"
-		"contains objects that obscure each other, reducing the amount of light\n"
-		"radiated in that particular area.\n"
-		"\n"
+        "The effect relies on the statistical fact that if there's a part in the\n"
+        "input image that is predominantly dark, chances are that the entire part\n"
+        "contains objects that obscure each other, reducing the amount of light\n"
+        "radiated in that particular area.\n"
+        "\n"
 
-		"Admittedly, the opposite is also true: If a part of the input image is\n"
-		"predominantly bright, chances are that the objects in that part of the\n"
-		"image has an increase amount of light inter-radiation, as a result of\n"
-		"objects in that part of the image radiating each other.\n"
-		"\n"
+        "Admittedly, the opposite is also true: If a part of the input image is\n"
+        "predominantly bright, chances are that the objects in that part of the\n"
+        "image has an increase amount of light inter-radiation, as a result of\n"
+        "objects in that part of the image radiating each other.\n"
+        "\n"
 
         "* What about performance? *\n"
-		"\n"
+        "\n"
 
-		"The implementation uses the Fast Cascaded Separable Blur technique,\n"
-		"which is blazing-fast. The entire effect executes in less than 0.35 ms\n"
-		"on a machine with a i7-8700K running at 4.2Ghz CPU and a GTX 1080Ti\n"
-		"running at 2000Mhz GPU in 2560x1440 resolution.\n"
-		"\n"
+        "The implementation uses the Fast Cascaded Separable Blur technique,\n"
+        "which is blazing-fast. The entire effect executes in less than 0.35 ms\n"
+        "on a machine with a i7-8700K running at 4.2Ghz CPU and a GTX 1080Ti\n"
+        "running at 2000Mhz GPU in 2560x1440 resolution.\n"
+        "\n"
 
-		"And if you're think you don't need the auto-gain feature (by disabling\n"
-		"it in preprocessor definitions), you can cut 0.05 ms and get the total\n"
-		"execution time down to 0.3 ms.\n"
-		"\n"
+        "And if you're think you don't need the auto-gain feature (by disabling\n"
+        "it in preprocessor definitions), you can cut 0.05 ms and get the total\n"
+        "execution time down to 0.3 ms.\n"
+        "\n"
 
         "* Where is this effect best placed? *\n"
-		"\n"
+        "\n"
 
-		"Since the effect addresses the lighting in the scene, it's best put\n"
-		"after any Global Illumination technique like Ambient Occlusion,\n"
-		"Obscurance, RTGI and before tone-mapping, film grain, color grading\n"
-		"of any sort, bloom, CA or any lens / sensor effects.\n"
-		"\n"
-		
+        "Since the effect addresses the lighting in the scene, it's best put\n"
+        "after any Global Illumination technique like Ambient Occlusion,\n"
+        "Obscurance, RTGI and before tone-mapping, film grain, color grading\n"
+        "of any sort, bloom, CA or any lens / sensor effects.\n"
+        "\n"
+        
 
-		"The Large Scale Perceptual Obscurance and Irradiance is written by\n"
-		"Alex Tuduran.\n";
+        "The Large Scale Perceptual Obscurance and Irradiance is written by\n"
+        "Alex Tuduran.\n";
 > {
 
 // -------------------------------------------------------------------------- //
@@ -1186,36 +1186,36 @@ technique FGFXLSPOIrr <
 #if LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON
 
     pass CopyBB {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyBBPS;
-		RenderTarget = HalfBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyBBPS;
+        RenderTarget = HalfBlurTex;
+    }
 
     pass CopyHalf {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyHalfPS;
-		RenderTarget = QuadBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyHalfPS;
+        RenderTarget = QuadBlurTex;
+    }
 
     pass CopyQuad {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyQuadPS;
-		RenderTarget = OctoBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyQuadPS;
+        RenderTarget = OctoBlurTex;
+    }
 
-	pass CopyOcto {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyOctoPS;
-		RenderTarget = HexaBlurTex;
-	}
+    pass CopyOcto {
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyOctoPS;
+        RenderTarget = HexaBlurTex;
+    }
 
 #else // LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON
 
     pass CopyBB {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyBBPS;
-		RenderTarget = HexaBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyBBPS;
+        RenderTarget = HexaBlurTex;
+    }
 
 #endif // LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON
 
@@ -1225,168 +1225,168 @@ technique FGFXLSPOIrr <
 
 #if LSPOIRR_BLUR_ON
 
-	pass CopyHexa {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyHexaPS;
-		RenderTarget = VBlurTex;
-	}
+    pass CopyHexa {
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyHexaPS;
+        RenderTarget = VBlurTex;
+    }
 
-	
+    
 #if 1 // cascade 0 rectangular
 
     pass HBlurC0R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif
 
 #if 1 // cascade 0 smooth
 
     pass HBlurC0S {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0S {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif
 
 #if 1 // cascade 0 super-smooth
 
     pass HBlurC0SS {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0SS {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif
 
 #if LSPOIRR_CASCADE_1_ON // cascade 1 rectangular
 
     pass HBlurC1R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC1PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC1PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC1R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC1PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC1PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // LSPOIRR_CASCADE_1_ON
 
 #if LSPOIRR_RECOVERY_BLUR_LONG == 0
 
     pass ShortBlur {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyVBlurPS;
-		RenderTarget = ShortBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyVBlurPS;
+        RenderTarget = ShortBlurTex;
+    }
 
 #endif
 
 #if LSPOIRR_CASCADE_2_ON // cascade 2 rectangular
 
-	pass HBlurC2R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC2PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC2R {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC2PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC2R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC2PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC2PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // LSPOIRR_CASCADE_2_ON
 
 #if LSPOIRR_RECOVERY_BLUR_LONG == 1
 
     pass ShortBlur {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyVBlurPS;
-		RenderTarget = ShortBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyVBlurPS;
+        RenderTarget = ShortBlurTex;
+    }
 
 #endif
 
 #if LSPOIRR_CASCADE_2_ON // cascade 2 smooth
 
-	pass HBlurC2S {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC2PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC2S {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC2PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC2S {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC2PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC2PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // LSPOIRR_CASCADE_2_ON
 
 #if LSPOIRR_CASCADE_3_ON // cascade 3 rectangular
 
-	pass HBlurC3R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC3PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC3R {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC3PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC3R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC3PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC3PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // LSPOIRR_CASCADE_3_ON
 
 #if 1 // cascade 0 ultra-smooth
 
-	pass HBlurC0US {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC0US {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0US {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif
 
 #else // LSPOIRR_BLUR_ON
 
-	pass CopyHexaBlur {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyHexaPS;
-		RenderTarget = VBlurTex;
-	}
+    pass CopyHexaBlur {
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyHexaPS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // LSPOIRR_BLUR_ON
 
@@ -1394,32 +1394,32 @@ technique FGFXLSPOIrr <
 
 #if LSPOIRR_AUTO_GAIN_ENABLED
 
-	pass PassComputeBlurMax {
-		VertexShader = PostProcessVS;
-		PixelShader  = ComputeBlurMaxPS;
-		RenderTarget = BlurMaxTex;
-	}
+    pass PassComputeBlurMax {
+        VertexShader = PostProcessVS;
+        PixelShader  = ComputeBlurMaxPS;
+        RenderTarget = BlurMaxTex;
+    }
 
-	pass PassBlendBlurMaxIntoHistoryTemp {
-		VertexShader = PostProcessVS;
-		PixelShader  = BlendBlurMaxIntoHistoryPS;
-		RenderTarget = BlurMaxHistoryTempTex;
-	}
+    pass PassBlendBlurMaxIntoHistoryTemp {
+        VertexShader = PostProcessVS;
+        PixelShader  = BlendBlurMaxIntoHistoryPS;
+        RenderTarget = BlurMaxHistoryTempTex;
+    }
 
-	pass CopyBlurMaxHistoryTemp {
-		VertexShader = PostProcessVS;
-		PixelShader = CopyBlurMaxHistoryTempPS;
-		RenderTarget = BlurMaxHistoryTex;
-	}
+    pass CopyBlurMaxHistoryTemp {
+        VertexShader = PostProcessVS;
+        PixelShader = CopyBlurMaxHistoryTempPS;
+        RenderTarget = BlurMaxHistoryTex;
+    }
 
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
 // -------------------------------------------------------------------------- //
 
-	pass PassLSPOIrr {
-		VertexShader = PostProcessVS;
-		PixelShader  = LSPOIrrPS;
-	}
+    pass PassLSPOIrr {
+        VertexShader = PostProcessVS;
+        PixelShader  = LSPOIrrPS;
+    }
 
 // -------------------------------------------------------------------------- //
 

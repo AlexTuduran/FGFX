@@ -52,49 +52,49 @@
 // -------------------------------------------------------------------------- //
 
 uniform int ___ABOUT <
-	ui_type = "radio";
-	ui_label = " ";
-	ui_category = "About";
-	ui_text =
-		"-=[ FGFX::FCSB[16X] - Fast Cascaded Separable Blur [16X] ]=-\n"
-		"\n"
+    ui_type = "radio";
+    ui_label = " ";
+    ui_category = "About";
+    ui_text =
+        "-=[ FGFX::FCSB[16X] - Fast Cascaded Separable Blur [16X] ]=-\n"
+        "\n"
 
-		"FCSB is a blur technique that combines cascaded H / V blur "
+        "FCSB is a blur technique that combines cascaded H / V blur "
         "passes and alias-free down-sampling in order to produce "
-		"large, smooth and alias-free blur at a fraction of the cost of "
-		"traditional separable Gaussian blur.\n"
-		"\n"
+        "large, smooth and alias-free blur at a fraction of the cost of "
+        "traditional separable Gaussian blur.\n"
+        "\n"
 
-		"For reference, the technique performs ~35 times faster than "
-		"traditional separable Gaussian blur on a 121 texels radius and "
-		"an astonishing ~122 times faster on a 484 texels radius.\n"
-		"\n"
+        "For reference, the technique performs ~35 times faster than "
+        "traditional separable Gaussian blur on a 121 texels radius and "
+        "an astonishing ~122 times faster on a 484 texels radius.\n"
+        "\n"
 
-		"The complexity of standard separable Gaussian blur is FCSB is "
-		"O(n), while the complexity of FCSB is O(log(n)), making it "
-		"ideal for cases where large smooth blur is required.\n"
-		"\n"
+        "The complexity of standard separable Gaussian blur is FCSB is "
+        "O(n), while the complexity of FCSB is O(log(n)), making it "
+        "ideal for cases where large smooth blur is required.\n"
+        "\n"
 
-		"In other words, as the radius increases exponentially, the "
-		"cost of FCSB increases linearly.\n"
-		"\n"
+        "In other words, as the radius increases exponentially, the "
+        "cost of FCSB increases linearly.\n"
+        "\n"
 
-		"The FCSB16X effect is provided not as an actual usable in-game "
-		"effect, but rather as a technique demonstration that can be "
-		"used as a performance booster alternative to the classic "
-		"separable Gaussian blur in other effects that make use of "
-		"blur to achieve their goals.\n"
-		"\n"
+        "The FCSB16X effect is provided not as an actual usable in-game "
+        "effect, but rather as a technique demonstration that can be "
+        "used as a performance booster alternative to the classic "
+        "separable Gaussian blur in other effects that make use of "
+        "blur to achieve their goals.\n"
+        "\n"
 
-		"The 16X refers to the fact that prior to cascading, the "
-		"back-buffer is down-sampled 16 times its original size, "
-		"yielding a performance boost of 16X compared to cascading on "
+        "The 16X refers to the fact that prior to cascading, the "
+        "back-buffer is down-sampled 16 times its original size, "
+        "yielding a performance boost of 16X compared to cascading on "
         "the full-sized back-buffer.\n"
-		"\n"
+        "\n"
 
-		"Even used on the full back-buffer, FCSB is much faster than "
-		"standard separable Gaussian blur due to the exhibited "
-		"O(log(n)) complexity.";
+        "Even used on the full back-buffer, FCSB is much faster than "
+        "standard separable Gaussian blur due to the exhibited "
+        "O(log(n)) complexity.";
 >;
 
 // -------------------------------------------------------------------------- //
@@ -102,11 +102,11 @@ uniform int ___ABOUT <
 // -------------------------------------------------------------------------- //
 
 uniform float BlurRadius < __UNIFORM_SLIDER_FLOAT1
-	ui_min = 0.00;
-	ui_max = 1.00;
-	ui_category = "Parameters";
-	ui_label = "Blue Radius";
-	ui_tooltip = "Blur radius in unit space.";
+    ui_min = 0.00;
+    ui_max = 1.00;
+    ui_category = "Parameters";
+    ui_label = "Blue Radius";
+    ui_tooltip = "Blur radius in unit space.";
 > = 0.25;
 
 // -------------------------------------------------------------------------- //
@@ -459,44 +459,51 @@ float3 VBlurC5PS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): CO
 // -------------------------------------------------------------------------- //
 
 technique FGFXFCSB16X <
-	ui_label = "FGFX::FCSB[16X]";
-	ui_tooltip =
-		"+------------------------------------------------------------+\n"
-		"|-=[ FGFX::FCSB[16X] - Fast Cascaded Separable Blur [16X] ]=-|\n"
-		"+------------------------------------------------------------+\n"
-		"\n"
-		"FCSB is a blur technique that combines cascaded H / V blur\n"
+    ui_label = "FGFX::FCSB[16X]";
+    ui_tooltip =
+        "+------------------------------------------------------------+\n"
+        "|-=[ FGFX::FCSB[16X] - Fast Cascaded Separable Blur [16X] ]=-|\n"
+        "+------------------------------------------------------------+\n"
+        "\n"
+
+        "FCSB is a blur technique that combines cascaded H / V blur\n"
         "passes and alias-free down-sampling in order to produce\n"
-		"large, smooth and alias-free blur at a fraction of the cost of\n"
-		"traditional separable Gaussian blur.\n"
-		"\n"
-		"For reference, the technique performs ~35 times faster than\n"
-		"traditional separable Gaussian blur on a 121 texels radius and\n"
-		"an astonishing ~122 times faster on a 484 texels radius.\n"
-		"\n"
-		"The complexity of standard separable Gaussian blur is FCSB is\n"
-		"O(n), while the complexity of FCSB is O(log(n)), making it\n"
-		"ideal for cases where large smooth blur is required.\n"
-		"\n"
-		"In other words, as the radius increases exponentially, the\n"
-		"cost of FCSB increases linearly.\n"
-		"\n"
-		"The FCSB16X effect is provided not as an actual usable in-game\n"
-		"effect, but rather as a technique demonstration that can be\n"
-		"used as a performance booster alternative to the classic\n"
-		"separable Gaussian blur in other effects that make use of\n"
-		"blur to achieve their goals.\n"
-		"\n"
-		"The 16X refers to the fact that prior to cascading, the\n"
-		"back-buffer is down-sampled 16 times its original size,\n"
-		"yielding a performance boost of 16X compared to cascading on\n"
+        "large, smooth and alias-free blur at a fraction of the cost of\n"
+        "traditional separable Gaussian blur.\n"
+        "\n"
+
+        "For reference, the technique performs ~35 times faster than\n"
+        "traditional separable Gaussian blur on a 121 texels radius and\n"
+        "an astonishing ~122 times faster on a 484 texels radius.\n"
+        "\n"
+
+        "The complexity of standard separable Gaussian blur is FCSB is\n"
+        "O(n), while the complexity of FCSB is O(log(n)), making it\n"
+        "ideal for cases where large smooth blur is required.\n"
+        "\n"
+
+        "In other words, as the radius increases exponentially, the\n"
+        "cost of FCSB increases linearly.\n"
+        "\n"
+
+        "The FCSB16X effect is provided not as an actual usable in-game\n"
+        "effect, but rather as a technique demonstration that can be\n"
+        "used as a performance booster alternative to the classic\n"
+        "separable Gaussian blur in other effects that make use of\n"
+        "blur to achieve their goals.\n"
+        "\n"
+
+        "The 16X refers to the fact that prior to cascading, the\n"
+        "back-buffer is down-sampled 16 times its original size,\n"
+        "yielding a performance boost of 16X compared to cascading on\n"
         "the full-sized back-buffer.\n"
-		"\n"
-		"Even used on the full back-buffer, FCSB is much faster than\n"
-		"standard separable Gaussian blur due to the exhibited\n"
-		"O(log(n)) complexity.\n"
-		"\n"
-		"The Fast Cascaded Separable Blur is written by Alex Tuduran.\n";
+        "\n"
+
+        "Even used on the full back-buffer, FCSB is much faster than\n"
+        "standard separable Gaussian blur due to the exhibited\n"
+        "O(log(n)) complexity.\n"
+        "\n"
+        "The Fast Cascaded Separable Blur is written by Alex Tuduran.\n";
 > {
 
 // -------------------------------------------------------------------------- //
@@ -506,36 +513,36 @@ technique FGFXFCSB16X <
 #if FCSB16X_ANTI_ALIASED_DOWN_SAMPLING_ON
 
     pass CopyBB {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyBBPS;
-		RenderTarget = HalfBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyBBPS;
+        RenderTarget = HalfBlurTex;
+    }
 
     pass CopyHalf {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyHalfPS;
-		RenderTarget = QuadBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyHalfPS;
+        RenderTarget = QuadBlurTex;
+    }
 
     pass CopyQuad {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyQuadPS;
-		RenderTarget = OctoBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyQuadPS;
+        RenderTarget = OctoBlurTex;
+    }
 
-	pass CopyOcto {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyOctoPS;
-		RenderTarget = HexaBlurTex;
-	}
+    pass CopyOcto {
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyOctoPS;
+        RenderTarget = HexaBlurTex;
+    }
 
 #else // FCSB16X_ANTI_ALIASED_DOWN_SAMPLING_ON
 
     pass CopyBB {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyBBPS;
-		RenderTarget = HexaBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyBBPS;
+        RenderTarget = HexaBlurTex;
+    }
 
 #endif // FCSB16X_ANTI_ALIASED_DOWN_SAMPLING_ON
 
@@ -545,148 +552,148 @@ technique FGFXFCSB16X <
 
 #if FCSB16X_BLUR_ON
 
-	pass CopyHexa {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyHexaPS;
-		RenderTarget = VBlurTex;
-	}
+    pass CopyHexa {
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyHexaPS;
+        RenderTarget = VBlurTex;
+    }
 
-	
+    
 #if 1 // cascade 0 rectangular
 
     pass HBlurC0R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif
 
 #if 1 // cascade 0 smooth
 
     pass HBlurC0S {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0S {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif
 
 #if 1 // cascade 0 super-smooth
 
     pass HBlurC0SS {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0SS {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif
 
 #if FCSB16X_CASCADE_1_ON // cascade 1 rectangular
 
     pass HBlurC1R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC1PS;
-		RenderTarget = HBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC1PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC1R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC1PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC1PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // FCSB16X_CASCADE_1_ON
 
 #if FCSB16X_CASCADE_2_ON // cascade 2 rectangular
 
-	pass HBlurC2R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC2PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC2R {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC2PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC2R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC2PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC2PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // FCSB16X_CASCADE_2_ON
 
 #if FCSB16X_CASCADE_2_ON // cascade 2 smooth
 
-	pass HBlurC2S {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC2PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC2S {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC2PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC2S {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC2PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC2PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // FCSB16X_CASCADE_2_ON
 
 #if FCSB16X_CASCADE_3_ON // cascade 3 rectangular
 
-	pass HBlurC3R {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC3PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC3R {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC3PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC3R {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC3PS;
-		RenderTarget = VBlurTex;
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC3PS;
+        RenderTarget = VBlurTex;
+    }
 
 #endif // FCSB16X_CASCADE_3_ON
 
 #if 1 // cascade 0 ultra-smooth
 
-	pass HBlurC0US {
-		VertexShader = PostProcessVS;
-		PixelShader  = HBlurC0PS;
-		RenderTarget = HBlurTex;
-	}
+    pass HBlurC0US {
+        VertexShader = PostProcessVS;
+        PixelShader  = HBlurC0PS;
+        RenderTarget = HBlurTex;
+    }
 
     pass VBlurC0US {
-		VertexShader = PostProcessVS;
-		PixelShader  = VBlurC0PS;
-		// RenderTarget is back-buffer
-	}
+        VertexShader = PostProcessVS;
+        PixelShader  = VBlurC0PS;
+        // RenderTarget is back-buffer
+    }
 
 #endif
 
 #else // FCSB16X_BLUR_ON
 
-	pass CopyHexaBlur {
-		VertexShader = PostProcessVS;
-		PixelShader  = CopyHexaPS;
-		// RenderTarget is back-buffer
-	}
+    pass CopyHexaBlur {
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyHexaPS;
+        // RenderTarget is back-buffer
+    }
 
 #endif // FCSB16X_BLUR_ON
 
