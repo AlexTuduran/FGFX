@@ -111,7 +111,7 @@ uniform int ___ABOUT <
         "arbitrary image, blur it with a large gaussian and then overlay (as in "
         "standard overlay blending operation) the blurred image onto the original "
         "image, we get the illusion that some statistically-correct occlusion and "
-        " irradiance show up in the image.\n"
+        "irradiance shows up in the image.\n"
         "\n"
 
         "* Why does it work? *\n"
@@ -125,8 +125,8 @@ uniform int ___ABOUT <
 
         "Admittedly, the opposite is also true: If a part of the input image is "
         "predominantly bright, chances are that the objects in that part of the "
-        "image has an increase amount of light inter-radiation, as a result of "
-        "objects in that part of the image radiating each other.\n"
+        "image have an increased amount of light inter-radiation, as a result of "
+        "objects in that part of the image bouncing light to each other.\n"
         "\n"
 
         "* What about performance? *\n"
@@ -138,8 +138,8 @@ uniform int ___ABOUT <
         "running at 2000Mhz GPU in 2560x1440 resolution.\n"
         "\n"
 
-        "And if you're think you don't need the auto-gain feature (by disabling "
-        "it in preprocessor definitions), you can cut 0.05 ms and get the total "
+        "And if you think you don't need the auto-gain feature (by disabling it "
+        "in preprocessor definitions), you can cut 0.05 ms and get the total "
         "execution time down to 0.3 ms.\n"
         "\n"
 
@@ -149,7 +149,7 @@ uniform int ___ABOUT <
         "Since the effect addresses the lighting in the scene, it's best put "
         "after any Global Illumination technique like Ambient Occlusion, "
         "Obscurance, RTGI and before tone-mapping, film grain, color grading "
-        "of any sort, bloom, CA or any lens / sensor effects.\n";
+        "of any sort, bloom, CA or any lens & sensor effects.\n";
 >;
 
 // -------------------------------------------------------------------------- //
@@ -246,22 +246,6 @@ uniform float LSPOIrrSaturation < __UNIFORM_SLIDER_FLOAT1
     ui_tooltip = "Adjusts the saturation of the final result.";
 > = 1.0;
 
-uniform float LSPOIrrRaiseShadowsAmount < __UNIFORM_SLIDER_FLOAT1
-    ui_min = 0.0;
-    ui_max = 0.2; // update @___RAISE_SHADOWS_AMOUNT_MAX___
-    ui_category = ___CATEGORY_TONING_SETTINGS___;
-    ui_label = "Raise Shadows Amount";
-    ui_tooltip = "Adjusts the intensity of the darker areas in the final image.";
-> = 0.0;
-
-uniform float LSPOIrrRaisedShadowsSaturation < __UNIFORM_SLIDER_FLOAT1
-    ui_min = 0.0;
-    ui_max = 1.0;
-    ui_category = ___CATEGORY_TONING_SETTINGS___;
-    ui_label = "Raised Shadows Saturation";
-    ui_tooltip = "Adjusts the saturation of the darker areas in the final image.";
-> = 0.25;
-
 // -------------------------------------------------------------------------- //
 // "Debug" category
 // -------------------------------------------------------------------------- //
@@ -279,7 +263,6 @@ uniform int LSPOIrrDebugType <
         "Blur Max\0"
         "Blur Gain\0"
         "Gained Blur\0"
-        "Raise Shadow Function Plot\0"
         "No Toning\0"
         "No Intensity\0";
 #else // LSPOIRR_AUTO_GAIN_ENABLED
@@ -309,9 +292,8 @@ uniform int LSPOIrrDebugType <
 #define ___LSPOIRR_DEBUG_BLUR_MAX___                        (0x04)
 #define ___LSPOIRR_DEBUG_BLUR_GAIN___                       (0x05)
 #define ___LSPOIRR_DEBUG_GAINED_BLUR___                     (0x06)
-#define ___LSPOIRR_DEBUG_RAISE_SHADOWS_FUNCTION_PLOT___     (0x07)
-#define ___LSPOIRR_DEBUG_NO_TONING___                       (0x08)
-#define ___LSPOIRR_DEBUG_NO_INTENSITY___                    (0x09)
+#define ___LSPOIRR_DEBUG_NO_TONING___                       (0x07)
+#define ___LSPOIRR_DEBUG_NO_INTENSITY___                    (0x08)
 
 #else // LSPOIRR_AUTO_GAIN_ENABLED
 
@@ -462,10 +444,8 @@ sampler BlurMaxHistoryTempSampler {
 
 // -------------------------------------------------------------------------- //
 
-#define ___ALL_BLUR_PASSES_RADIUS_COMPENSATION___  (0.75)
 #define ___MAX_CHANNEL_COMPENSATION___             (1.5)
 #define ___HASH_TIME_STEP___                       (0.79531)
-#define ___ONE_THIRD___                            (0.333333333)
 #define ___HALF_SQRT_TWO___                        (0.707106781)
 
 // -------------------------------------------------------------------------- //
@@ -485,9 +465,8 @@ sampler BlurMaxHistoryTempSampler {
 static const float  ___BUFFER_ASPECT_RATIO___            = BUFFER_WIDTH / BUFFER_HEIGHT;
 static const int    ___MAX_BLUR_NUM_TOTAL_SAMPLES___     = ___MAX_BLUR_NUM_SAMPLES___ * ___MAX_BLUR_NUM_SAMPLES___;
 static const float  ___MAX_BLUR_NUM_TOTAL_SAMPLES_RCP___ = 1.0 / ___MAX_BLUR_NUM_TOTAL_SAMPLES___;
-static const float  ___RAISE_SHADOWS_AMOUNT_MAX___       = 0.2;
-static const float  ___RAISE_SHADOWS_AMOUNT_MAX_RCP___   = 1.0 / ___RAISE_SHADOWS_AMOUNT_MAX___;
 static const int    ___BUFFER_SIZE_DIVIDER___            = 1 << ___BUFFER_SIZE_MAX_BIT_SHIFT___;
+static const float  ___ONE_THIRD___                      = 1.0 / 3.0;
 
 // we use a step of 1.5 for sampling 2 pixels at the same time with just one
 // tex2D call and directly get their average:
@@ -884,61 +863,6 @@ float ComputeBlurMaxPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOOR
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
 // -------------------------------------------------------------------------- //
-// shadow-raising routines
-// -------------------------------------------------------------------------- //
-
-float RaiseShadows(in float x, in float level) {
-    x = saturate(x);
-    float g = pow(x, 1.0 - pow(saturate(level), ___HALF_SQRT_TWO___));
-    float t = SMOOTHSTEP_QUINTIC_INTERPOLANT(pow(x, level));
-    t = SMOOTHSTEP_QUINTIC_INTERPOLANT(t);
-    return lerp(g, x, t);
-}
-
-float3 RaiseShadows(in float3 color, in float level) {
-    return float3(
-        RaiseShadows(color.r, level),
-        RaiseShadows(color.g, level),
-        RaiseShadows(color.b, level)
-    );
-}
-
-float RaiseShadows2X(in float x, in float level) {
-    return RaiseShadows(RaiseShadows(x, level), level);
-}
-
-float3 RaiseShadows2X(in float3 color, in float level) {
-    return float3(
-        RaiseShadows2X(color.r, level),
-        RaiseShadows2X(color.g, level),
-        RaiseShadows2X(color.b, level)
-    );
-}
-
-// -------------------------------------------------------------------------- //
-// plotting routines
-// -------------------------------------------------------------------------- //
-
-float3 PlotRaiseShadowsFunction(in float2 texcoord) {
-    float x = texcoord.x;
-    float y = RaiseShadows2X(x, LSPOIrrRaiseShadowsAmount);
-    y = 1.0 - y; // (0, 0) is top-left
-    float dist = distance(texcoord, float2(x, y));
-    dist = 1.0 - dist;
-    dist = saturate(dist);
-    dist = pow(dist, 400.0);
-    dist += 0.0025;
-    dist = saturate(dist);
-    dist = pow(dist, 10.0);
-    dist *= 1000.0;
-    dist = saturate(dist);
-#if 0
-    dist = dist > 0.05 ? 1 : 0;
-#endif
-    return float3(dist, 0, 0);
-}
-
-// -------------------------------------------------------------------------- //
 
 float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : COLOR {
     // sample scene color
@@ -955,11 +879,7 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
     float3 finalColor = color;
 
     // sample blur as overlay color
-#if 1   
     float3 overlayColor = tex2D(VBlurSampler, screenUV).rgb;
-#else
-    float3 overlayColor = tex2D(ShortBlurSampler, screenUV).rgb;
-#endif
 
     // debug
     [branch]
@@ -1052,26 +972,6 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
     // back-up the final color for comparison
     float3 originalFinalColor = finalColor;
 
-    // apply shadow raising
-    finalColor = RaiseShadows2X(finalColor, LSPOIrrRaiseShadowsAmount);
-
-    // also increase the saturation of the raised shadows directly proportional to the raising amount
-    float originalLuminance = COMPUTE_COLOR_MAX_CHANNEL(originalFinalColor);
-    float luminance = COMPUTE_COLOR_MAX_CHANNEL(finalColor);
-    float raisedAmount = originalLuminance > 0.0 ? luminance / originalLuminance : 0.0;
-    float normalizedLSPOIrrRaiseShadowsAmount = LSPOIrrRaiseShadowsAmount * ___RAISE_SHADOWS_AMOUNT_MAX_RCP___;
-    float shadowsSaturationLinearModulator = lerp(1.0, saturate(luminance * 20.0), normalizedLSPOIrrRaiseShadowsAmount); // 20.0 was established empirically (the larger, the steeper)
-    float shadowsSaturation = raisedAmount * shadowsSaturationLinearModulator;
-    shadowsSaturation = lerp(1.0, shadowsSaturation, LSPOIrrRaisedShadowsSaturation);
-    finalColor = SATURATE_COLOR(finalColor, shadowsSaturation);
-
-    // debug
-    [branch]
-    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_RAISE_SHADOWS_FUNCTION_PLOT___) {
-        float3 plotColor = PlotRaiseShadowsFunction(screenUV);
-        return plotColor.r < 0.01 ? finalColor : plotColor;
-    }
-
     // debug
     [branch]
     if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_NO_INTENSITY___) {
@@ -1133,7 +1033,7 @@ technique FGFXLSPOIrr <
         "arbitrary image, blur it with a large gaussian and then overlay (as in\n"
         "standard overlay blending operation) the blurred image onto the original\n"
         "image, we get the illusion that some statistically-correct occlusion and\n"
-        " irradiance show up in the image.\n"
+        "irradiance shows up in the image.\n"
         "\n"
 
         "* Why does it work? *\n"
@@ -1147,8 +1047,8 @@ technique FGFXLSPOIrr <
 
         "Admittedly, the opposite is also true: If a part of the input image is\n"
         "predominantly bright, chances are that the objects in that part of the\n"
-        "image has an increase amount of light inter-radiation, as a result of\n"
-        "objects in that part of the image radiating each other.\n"
+        "image have an increased amount of light inter-radiation, as a result of\n"
+        "objects in that part of the image bouncing light to each other.\n"
         "\n"
 
         "* What about performance? *\n"
@@ -1160,8 +1060,8 @@ technique FGFXLSPOIrr <
         "running at 2000Mhz GPU in 2560x1440 resolution.\n"
         "\n"
 
-        "And if you're think you don't need the auto-gain feature (by disabling\n"
-        "it in preprocessor definitions), you can cut 0.05 ms and get the total\n"
+        "And if you think you don't need the auto-gain feature (by disabling it\n"
+        "in preprocessor definitions), you can cut 0.05 ms and get the total\n"
         "execution time down to 0.3 ms.\n"
         "\n"
 
@@ -1171,7 +1071,7 @@ technique FGFXLSPOIrr <
         "Since the effect addresses the lighting in the scene, it's best put\n"
         "after any Global Illumination technique like Ambient Occlusion,\n"
         "Obscurance, RTGI and before tone-mapping, film grain, color grading\n"
-        "of any sort, bloom, CA or any lens / sensor effects.\n"
+        "of any sort, bloom, CA or any lens & sensor effects.\n"
         "\n"
         
 
