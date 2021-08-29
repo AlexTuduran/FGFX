@@ -1,7 +1,7 @@
 // -------------------------------------------------------------------------- //
 
 // FGFX::LSPOIrr - Large Scale Perceptual Obscurance and Irradiance
-// Author  : Alex Tuduran | alex.tuduran@gmail.com
+// Author  : Alex Tuduran | alex.tuduran@gmail.com | github.com/AlexTuduran
 // Version : 0.7 [ReShade 3.0]
 
 // -------------------------------------------------------------------------- //
@@ -186,7 +186,7 @@ uniform float LSPOIrrEffectSaturation < __UNIFORM_SLIDER_FLOAT1
     ui_category = ___CATEGORY_EFFECT_SETTINGS___;
     ui_label = "Effect Saturation";
     ui_tooltip = "Adjusts the saturation of the resulting irradiance.";
-> = 0.25;
+> = 0.0;
 
 uniform float LSPOIrrShHlRecovery < __UNIFORM_SLIDER_FLOAT1
     ui_min = 0.0;

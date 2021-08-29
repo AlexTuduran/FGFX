@@ -1,7 +1,7 @@
 // -------------------------------------------------------------------------- //
 
 // FGFX::FCSB[16X] - Fast Cascaded Separable Blur [16X]
-// Author  : Alex Tuduran | alex.tuduran@gmail.com
+// Author  : Alex Tuduran | alex.tuduran@gmail.com | github.com/AlexTuduran
 // Version : 0.6 [ReShade 3.0]
 
 // -------------------------------------------------------------------------- //
