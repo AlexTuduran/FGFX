@@ -1,5 +1,4 @@
-# FGFX ReShade Shaders
-Collection of shaders for [ReShade](https://reshade.me/).
+# FGFX: A collection of shaders for [ReShade](https://reshade.me/)
 
 ## 1. Prerequisites
 - [ReShade](https://reshade.me/): https://reshade.me/
