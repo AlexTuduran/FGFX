@@ -8,7 +8,8 @@
 // preprocessor definitions
 // -------------------------------------------------------------------------- //
 
-// disable this for a slight boost in performance if auto-gain is not required
+// enables / disables the auto-gain feature
+// disable for a slight performance boost if auto-gain is not needed
 // 0 = auto-gain disabled
 // 1 = auto-gain enabled
 // def = 1
@@ -18,13 +19,7 @@
 
 #if LSPOIRR_AUTO_GAIN_ENABLED
 
-// greater than 0
-// less than 0.5
-// def = 0.05
-#ifndef LSPOIRR_BLUR_MIN_THRESHOLD
-    #define LSPOIRR_BLUR_MIN_THRESHOLD 0.05
-#endif
-
+// defines how fast the auto-gain adapts to the scenery
 // greater than 0
 // less than 0.25
 // def = 0.04
@@ -32,53 +27,32 @@
     #define LSPOIRR_AUTO_GAIN_SPEED 0.04
 #endif
 
+// defines the breaking point between the two piecewise functions that make up
+// the compute blur gain function
+// greater than 0
+// less than 0.5
+// def = 0.05
+#ifndef LSPOIRR_BLUR_MAX_RECIPROCAL_THRESHOLD
+    #define LSPOIRR_BLUR_MAX_RECIPROCAL_THRESHOLD 0.05
+#endif
+
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
-// 0 = anti-aliased down-sampling off
-// 1 = anti-aliased down-sampling on
-// def = 1
-#ifndef LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON
-    #define LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON 1
-#endif
-
-// 0 = blur off
-// 1 = blur on
-// def = 1
-#ifndef LSPOIRR_BLUR_ON
-    #define LSPOIRR_BLUR_ON 1
-#endif
-
-// 0 = cascade 1 off
-// 1 = cascade 1 on
-// def = 1
-#ifndef LSPOIRR_CASCADE_1_ON
-    #define LSPOIRR_CASCADE_1_ON 1
-#endif
-
-// 0 = cascade 2 off
-// 1 = cascade 2 on
-// def = 1
-#ifndef LSPOIRR_CASCADE_2_ON
-    #define LSPOIRR_CASCADE_2_ON 1
-#endif
-
-// 0 = cascade 3 off
-// 1 = cascade 3 on
+// required for resolutions > 4K
+// 0 = cascade 3 disabled
+// 1 = cascade 3 enabled
 // def = 0
 #ifndef LSPOIRR_CASCADE_3_ON
     #define LSPOIRR_CASCADE_3_ON 0
 #endif
 
-// 0 = recovery blur is short
-// 1 = recovery blur is long
-// def = 1
-#ifndef LSPOIRR_RECOVERY_BLUR_LONG
-    #define LSPOIRR_RECOVERY_BLUR_LONG 1
-#endif
-
 // -------------------------------------------------------------------------- //
 
 #include "ReShadeUI.fxh"
+
+// -------------------------------------------------------------------------- //
+
+#define IDENT_TO_STR(ident) #ident
 
 // -------------------------------------------------------------------------- //
 // "About" category
@@ -279,6 +253,56 @@ uniform int LSPOIrrDebugType <
     ui_tooltip = "Different debug outputs";
 > = 0;
 
+// -------------------------------------------------------------------------- //
+// "Preprocessor definitions descriptions" category
+// -------------------------------------------------------------------------- //
+
+#define ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___ "Preprocessor definitions descriptions"
+
+#define MAKE_DESCRIPTION_VAR(ident) ident##_DESC
+
+uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_AUTO_GAIN_ENABLED) <
+    ui_type = "radio";
+    ui_label = " ";
+    ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_text =
+        IDENT_TO_STR(LSPOIRR_AUTO_GAIN_ENABLED)
+        ":\n- Enables / disables the auto-gain feature. "
+        "Disable for a slight performance boost if auto-gain is not needed.\n"
+        "- 0 means disabled, 1 means enabled, default is 1.\n";
+>;
+
+uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_AUTO_GAIN_SPEED) <
+    ui_type = "radio";
+    ui_label = " ";
+    ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_text =
+        IDENT_TO_STR(LSPOIRR_AUTO_GAIN_SPEED)
+        ":\n- Defines how fast the auto-gain adapts to the scenery. "
+        "Disable for a slight performance boost if auto-gain is not needed.\n"
+        "- Must be greater than 0, less than 0.25, default is 0.04.\n";
+>;
+
+uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_BLUR_MAX_RECIPROCAL_THRESHOLD) <
+    ui_type = "radio";
+    ui_label = " ";
+    ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_text =
+        IDENT_TO_STR(LSPOIRR_BLUR_MAX_RECIPROCAL_THRESHOLD)
+        ":\n- Defines the breaking point between the two piecewise functions that make up the compute blur gain function.\n"
+        "- Must be greater than 0, less than 0.5, default is 0.05.\n";
+>;
+
+uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_CASCADE_3_ON) <
+    ui_type = "radio";
+    ui_label = " ";
+    ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_text =
+        IDENT_TO_STR(LSPOIRR_CASCADE_3_ON)
+        ":\n- Enables / disables cascade 3 in the Fast Cascaded Separable Blur implementation in order to achieve a much wider blur radius. "
+        "Only required for resolutions bigger than 4K.\n"
+        "- 0 means disabled, 1 means enabled, default is 0.\n";
+>;
 
 // -------------------------------------------------------------------------- //
 
@@ -310,7 +334,7 @@ uniform int LSPOIrrDebugType <
 // -------------------------------------------------------------------------- //
 
 // this value is tightly related to the architecture of this implementation (16X)
-// of FCSB, therefore should not be changed
+// of FCSB (Fast Cascaded Separable Blur), therefore should not be changed
 #define ___BUFFER_SIZE_MAX_BIT_SHIFT___ (4)
 
 // -------------------------------------------------------------------------- //
@@ -847,10 +871,10 @@ float3 DrawBlurMaxSamplesPositions(in float2 texcoord) {
     return color;
 }
 
-float ComputeBlurGain(in float blurMax, in float minThreshold) {
+float ComputeBlurGain(in float blurMax, in float reciptocalThreshold) {
     [branch]
-    if (blurMax <= minThreshold) {
-        return blurMax / (minThreshold * minThreshold);
+    if (blurMax <= reciptocalThreshold) {
+        return blurMax / (reciptocalThreshold * reciptocalThreshold);
     } else {
         return 1.0 / blurMax;
     }
@@ -914,7 +938,7 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
         return float3(blurMax, blurMax, blurMax);
     }
 
-    float blurGain = ComputeBlurGain(blurMax, LSPOIRR_BLUR_MIN_THRESHOLD);
+    float blurGain = ComputeBlurGain(blurMax, LSPOIRR_BLUR_MAX_RECIPROCAL_THRESHOLD);
 
     // clamp it
     blurGain = clamp(blurGain, 1.0, 4.0); // 4.0 was established empirically
@@ -1083,8 +1107,6 @@ technique FGFXLSPOIrr <
 // back-buffer reduction
 // -------------------------------------------------------------------------- //
 
-#if LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON
-
     pass CopyBB {
         VertexShader = PostProcessVS;
         PixelShader  = CopyBBPS;
@@ -1109,21 +1131,9 @@ technique FGFXLSPOIrr <
         RenderTarget = HexaBlurTex;
     }
 
-#else // LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON
-
-    pass CopyBB {
-        VertexShader = PostProcessVS;
-        PixelShader  = CopyBBPS;
-        RenderTarget = HexaBlurTex;
-    }
-
-#endif // LSPOIRR_ANTI_ALIASED_DOWN_SAMPLING_ON
-
 // -------------------------------------------------------------------------- //
 // blur cascades
 // -------------------------------------------------------------------------- //
-
-#if LSPOIRR_BLUR_ON
 
     pass CopyHexa {
         VertexShader = PostProcessVS;
@@ -1180,7 +1190,7 @@ technique FGFXLSPOIrr <
 
 #endif
 
-#if LSPOIRR_CASCADE_1_ON // cascade 1 rectangular
+#if 1 // cascade 1 rectangular
 
     pass HBlurC1R {
         VertexShader = PostProcessVS;
@@ -1194,19 +1204,9 @@ technique FGFXLSPOIrr <
         RenderTarget = VBlurTex;
     }
 
-#endif // LSPOIRR_CASCADE_1_ON
-
-#if LSPOIRR_RECOVERY_BLUR_LONG == 0
-
-    pass ShortBlur {
-        VertexShader = PostProcessVS;
-        PixelShader  = CopyVBlurPS;
-        RenderTarget = ShortBlurTex;
-    }
-
 #endif
 
-#if LSPOIRR_CASCADE_2_ON // cascade 2 rectangular
+#if 1 // cascade 2 rectangular
 
     pass HBlurC2R {
         VertexShader = PostProcessVS;
@@ -1220,9 +1220,7 @@ technique FGFXLSPOIrr <
         RenderTarget = VBlurTex;
     }
 
-#endif // LSPOIRR_CASCADE_2_ON
-
-#if LSPOIRR_RECOVERY_BLUR_LONG == 1
+#endif
 
     pass ShortBlur {
         VertexShader = PostProcessVS;
@@ -1230,9 +1228,7 @@ technique FGFXLSPOIrr <
         RenderTarget = ShortBlurTex;
     }
 
-#endif
-
-#if LSPOIRR_CASCADE_2_ON // cascade 2 smooth
+#if 1 // cascade 2 smooth
 
     pass HBlurC2S {
         VertexShader = PostProcessVS;
@@ -1246,7 +1242,7 @@ technique FGFXLSPOIrr <
         RenderTarget = VBlurTex;
     }
 
-#endif // LSPOIRR_CASCADE_2_ON
+#endif
 
 #if LSPOIRR_CASCADE_3_ON // cascade 3 rectangular
 
@@ -1279,16 +1275,6 @@ technique FGFXLSPOIrr <
     }
 
 #endif
-
-#else // LSPOIRR_BLUR_ON
-
-    pass CopyHexaBlur {
-        VertexShader = PostProcessVS;
-        PixelShader  = CopyHexaPS;
-        RenderTarget = VBlurTex;
-    }
-
-#endif // LSPOIRR_BLUR_ON
 
 // -------------------------------------------------------------------------- //
 
