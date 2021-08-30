@@ -70,7 +70,7 @@ uniform int ___ABOUT <
         "an astonishing ~122 times faster on a 484 texels radius.\n"
         "\n"
 
-        "The complexity of standard separable Gaussian blur is FCSB is "
+        "The complexity of standard separable Gaussian blur is "
         "O(n), while the complexity of FCSB is O(log(n)), making it "
         "ideal for cases where large smooth blur is required.\n"
         "\n"
@@ -477,7 +477,7 @@ technique FGFXFCSB16X <
         "an astonishing ~122 times faster on a 484 texels radius.\n"
         "\n"
 
-        "The complexity of standard separable Gaussian blur is FCSB is\n"
+        "The complexity of standard separable Gaussian blur is\n"
         "O(n), while the complexity of FCSB is O(log(n)), making it\n"
         "ideal for cases where large smooth blur is required.\n"
         "\n"
