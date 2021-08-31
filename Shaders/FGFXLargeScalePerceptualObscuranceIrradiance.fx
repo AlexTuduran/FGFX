@@ -46,6 +46,14 @@
     #define LSPOIRR_CASCADE_3_ON 0
 #endif
 
+// enables / disables working in sRGB color space
+// 0 = sRGB disabled
+// 1 = sRGB 3 enabled
+// def = 0
+#ifndef LSPOIRR_SRGB
+    #define LSPOIRR_SRGB 0
+#endif
+
 // -------------------------------------------------------------------------- //
 
 #include "ReShadeUI.fxh"
@@ -304,6 +312,18 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_CASCADE_3_ON) <
         "- 0 means disabled, 1 means enabled, default is 0.\n";
 >;
 
+uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_SRGB) <
+    ui_type = "radio";
+    ui_label = " ";
+    ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_text =
+        IDENT_TO_STR(LSPOIRR_SRGB)
+        ":\n- Enables / disables working in sRGB color space. "
+        "Blending the effect in sRGB yields slightly different results and it should be toggled as needed by the specific game you're running.\n"
+        "- However, beware that when enabled, in most cases the final output is lightly darker in the shadows areas than when disabled.\n"
+        "- 0 means disabled, 1 means enabled, default is 0.\n";
+>;
+
 // -------------------------------------------------------------------------- //
 
 #define ___LSPOIRR_DEBUG_NONE___                            (0x00)
@@ -340,6 +360,17 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_CASCADE_3_ON) <
 // -------------------------------------------------------------------------- //
 
 uniform float FrameTime <source = "frametime";>;
+
+// -------------------------------------------------------------------------- //
+// sRGB back-buffer sampler
+// -------------------------------------------------------------------------- //
+
+sampler2D ReShadeBackBufferSRGBSampler {
+	Texture = ReShade::BackBufferTex;
+#if LSPOIRR_SRGB
+	SRGBTexture = true;
+#endif // LSPOIRR_SRGB
+};
 
 // -------------------------------------------------------------------------- //
 // down-samplers and their textures
@@ -535,7 +566,7 @@ static const float2 ___SCALED_BUFFER_SIZE_DIVIDER_DIVIDER_COMPENSATION_OFFSET___
 
 float3 CopyBBPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): COLOR {
     // if writing to a half-sized texture, this returns the average of 4 neighbour texels
-    return tex2D(ReShade::BackBuffer, texcoord.xy).rgb;
+    return tex2D(ReShadeBackBufferSRGBSampler, texcoord.xy).rgb;
 }
 
 float3 CopyHalfPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): COLOR {
@@ -659,7 +690,7 @@ float3 VBlur(in float2 texcoord : TEXCOORD, float blurSampleOffset, sampler srcS
 
 float3 HBlurC0BBPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): COLOR {
     // reads from backbuffer, writes to HBlurTex
-    return HBlur(texcoord, ___BLUR_SAMPLE_OFFSET_CASCADE_0___, ReShade::BackBuffer);
+    return HBlur(texcoord, ___BLUR_SAMPLE_OFFSET_CASCADE_0___, ReShadeBackBufferSRGBSampler);
 }
 
 float3 HBlurC0PS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD): COLOR {
@@ -811,7 +842,7 @@ float ComputeBlurMaxChannel(in float2 texcoord) {
 #if 0
     // debug
     if (1) {
-        return tex2D(ReShade::BackBuffer, texcoord).r;
+        return tex2D(ReShadeBackBufferSRGBSampler, texcoord).r;
     }
 #endif
 
@@ -891,7 +922,7 @@ float ComputeBlurMaxPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOOR
 float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : COLOR {
     // sample scene color
     float2 screenUV = texcoord.xy;
-    float3 color = tex2D(ReShade::BackBuffer, screenUV).rgb;
+    float3 color = tex2D(ReShadeBackBufferSRGBSampler, screenUV).rgb;
 
     // early exit
     [branch]
@@ -1305,6 +1336,9 @@ technique FGFXLSPOIrr <
     pass PassLSPOIrr {
         VertexShader = PostProcessVS;
         PixelShader  = LSPOIrrPS;
+#if LSPOIRR_SRGB
+        SRGBWriteEnable = true;
+#endif // LSPOIRR_SRGB
     }
 
 // -------------------------------------------------------------------------- //
