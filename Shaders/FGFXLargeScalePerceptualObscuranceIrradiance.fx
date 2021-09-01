@@ -73,7 +73,7 @@
 // operation used in the overlay blending opration  doesn't play well with
 // custom breaking point and a different custom blending operation is required
 // to be developed
-#define ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT 1
+#define ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT 0
 
 // -------------------------------------------------------------------------- //
 
