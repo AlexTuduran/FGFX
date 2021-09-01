@@ -55,6 +55,27 @@
 #endif
 
 // -------------------------------------------------------------------------- //
+// internal preprocessor definitions
+// -------------------------------------------------------------------------- //
+
+// at the core of effect there's the overlay blending operation which is a
+// piecewise function computed as a multiplication blending operation if the
+// overlay layer is less than 0.5 and as a screen blending operation otherwise
+// therefore, the standard overlay blending operation breaks by default at 0.5
+// however, the overlay blending operation can be further extended by introducing
+// a custom breaking point that can range from 0.0 to 1.0
+// this preprocessor definition enables the usage of a custom
+// occlusion - irradiance breaking point that can be controled from UI
+// see 'Occlusion-Irradiance Neutral Point' ui parameter
+//
+// warning:
+// however, this feature is ***work in progress***, as the screen blending
+// operation used in the overlay blending opration  doesn't play well with
+// custom breaking point and a different custom blending operation is required
+// to be developed
+#define ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT 1
+
+// -------------------------------------------------------------------------- //
 
 #include "ReShadeUI.fxh"
 
@@ -154,6 +175,34 @@ uniform float LSPOIrrEffectIntensity < __UNIFORM_SLIDER_FLOAT1
     ui_tooltip = "Adjusts the overall intensity of the effect.";
 > = 0.9;
 
+uniform float LSPOIrrOcclusionIntensity < __UNIFORM_SLIDER_FLOAT1
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Occlusion Intensity";
+    ui_tooltip = "Adjusts the occlusion intensity of the effect.";
+> = 1.0;
+
+uniform float LSPOIrrIrradianceIntensity < __UNIFORM_SLIDER_FLOAT1
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Irradiance Intensity";
+    ui_tooltip = "Adjusts the irradiance intensity of the effect.";
+> = 1.0;
+
+#if ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
+
+uniform float LSPOIrrOcclusionIrradianceNeutralPoint < __UNIFORM_SLIDER_FLOAT1
+    ui_min = 0.0;
+    ui_max = 1.0;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Occlusion-Irradiance Neutral Point";
+    ui_tooltip = "Adjusts the point where occlusion and irradiance meet at 0 intensity.";
+> = 0.5;
+
+#endif // ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
+
 uniform float LSPOIrrEffectRadius < __UNIFORM_SLIDER_FLOAT1
     ui_min = 0.25;
     ui_max = 1.00;
@@ -167,15 +216,22 @@ uniform float LSPOIrrEffectSaturation < __UNIFORM_SLIDER_FLOAT1
     ui_max = 1.0;
     ui_category = ___CATEGORY_EFFECT_SETTINGS___;
     ui_label = "Effect Saturation";
-    ui_tooltip = "Adjusts the saturation of the resulting irradiance.";
+    ui_tooltip =
+        "Adjusts the saturation of the resulting occlusion and irradiance.\n"
+        "\n"
+        "Notice this is NOT the final output saturation, but the saturation applied to occlusion and irradiance prior to blending over the color buffer.\n"
+        "For the final output saturation see 'Saturation' in the 'Toning Settings' category.";
 > = 0.0;
 
-uniform float LSPOIrrShHlRecovery < __UNIFORM_SLIDER_FLOAT1
+uniform float LSPOIrrOcclusionIrradianceRecovery < __UNIFORM_SLIDER_FLOAT1
     ui_min = 0.0;
     ui_max = 1.0;
     ui_category = ___CATEGORY_EFFECT_SETTINGS___;
-    ui_label = "Shadows / Highlights Recovery";
-    ui_tooltip = "Adjusts the recovery applied to shadows and highlights.";
+    ui_label = "Occlusion-Irradiance Recovery";
+    ui_tooltip =
+        "Adjusts the recovery applied to occlusion and radiance.\n"
+        "\n"
+        "Set it to 0 for a dramatic effect overall, set to 1 for maximum recovery of dark and bright areas.";
 > = 0.75;
 
 // -------------------------------------------------------------------------- //
@@ -236,30 +292,77 @@ uniform int LSPOIrrDebugType <
     ui_type = "combo";
     ui_category = "Debug";
 
-#if LSPOIRR_AUTO_GAIN_ENABLED
     ui_items =
         "None\0"
+        "No Intensity\0"
+        "No Toning\0"
         "Raw Blur\0"
         "Saturated Blur\0"
+
+#if LSPOIRR_AUTO_GAIN_ENABLED
+        "Gained Blur\0"
+#endif // LSPOIRR_AUTO_GAIN_ENABLED
+
+        "Scaled Blur\0"
+        "Occlusion - Irradiance Map\0"
+
+#if LSPOIRR_AUTO_GAIN_ENABLED
         "Blur Max Samples Positions\0"
         "Blur Max\0"
         "Blur Gain\0"
-        "Gained Blur\0"
-        "No Toning\0"
-        "No Intensity\0";
-#else // LSPOIRR_AUTO_GAIN_ENABLED
-    ui_items =
-        "None\0"
-        "Raw Blur\0"
-        "Saturated Blur\0"
-        "Raise Shadow Function Plot\0"
-        "No Toning\0"
-        "No Intensity\0";
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
+
+        "Recovery Blur\0"
+        "Scaled Recovery Blur\0"
+        "Recovery Occlusion - Irradiance Map\0";
 
     ui_label = "Debug Type";
     ui_tooltip = "Different debug outputs";
 > = 0;
+
+// -------------------------------------------------------------------------- //
+
+#if 1
+
+    #define ___LSPOIRR_DEBUG_NONE___                                (0x00)
+    #define ___LSPOIRR_DEBUG_NO_INTENSITY___                        (0x01)
+    #define ___LSPOIRR_DEBUG_NO_TONING___                           (0x02)
+    #define ___LSPOIRR_DEBUG_RAW_BLUR___                            (0x03)
+    #define ___LSPOIRR_DEBUG_SATURATED_BLUR___                      (0x04)
+
+#endif
+
+#if LSPOIRR_AUTO_GAIN_ENABLED
+
+    #define ___LSPOIRR_DEBUG_GAINED_BLUR___                         (0x05)
+
+    #define ___LSPOIRR_DEBUG_SCALED_BLUR___                         (0x06)
+    #define ___LSPOIRR_DEBUG_OCCLUSION_IRRADIANCE_MAP___            (0x07)
+
+#else // LSPOIRR_AUTO_GAIN_ENABLED
+
+    #define ___LSPOIRR_DEBUG_SCALED_BLUR___                         (0x05)
+    #define ___LSPOIRR_DEBUG_OCCLUSION_IRRADIANCE_MAP___            (0x06)
+
+#endif // LSPOIRR_AUTO_GAIN_ENABLED
+
+#if LSPOIRR_AUTO_GAIN_ENABLED
+
+    #define ___LSPOIRR_DEBUG_BLUR_MAX_SAMPLES_POSITIONS___          (0x08)
+    #define ___LSPOIRR_DEBUG_BLUR_MAX___                            (0x09)
+    #define ___LSPOIRR_DEBUG_BLUR_GAIN___                           (0x0A)
+
+    #define ___LSPOIRR_DEBUG_RECOVERY_BLUR___                       (0x0B)
+    #define ___LSPOIRR_DEBUG_SCALED_RECOVERY_BLUR___                (0x0C)
+    #define ___LSPOIRR_DEBUG_RECOVERY_OCCLUSION_IRRADIANCE_MAP___   (0x0D)
+
+#else // LSPOIRR_AUTO_GAIN_ENABLED
+
+    #define ___LSPOIRR_DEBUG_RECOVERY_BLUR___                       (0x08)
+    #define ___LSPOIRR_DEBUG_SCALED_RECOVERY_BLUR___                (0x09)
+    #define ___LSPOIRR_DEBUG_RECOVERY_OCCLUSION_IRRADIANCE_MAP___   (0x0A)
+
+#endif // LSPOIRR_AUTO_GAIN_ENABLED
 
 // -------------------------------------------------------------------------- //
 // "Preprocessor definitions descriptions" category
@@ -326,29 +429,6 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_SRGB) <
 
 // -------------------------------------------------------------------------- //
 
-#define ___LSPOIRR_DEBUG_NONE___                            (0x00)
-#define ___LSPOIRR_DEBUG_RAW_BLUR___                        (0x01)
-#define ___LSPOIRR_DEBUG_SATURATED_BLUR___                  (0x02)
-
-#if LSPOIRR_AUTO_GAIN_ENABLED
-
-#define ___LSPOIRR_DEBUG_BLUR_MAX_SAMPLES_POSITIONS___      (0x03)
-#define ___LSPOIRR_DEBUG_BLUR_MAX___                        (0x04)
-#define ___LSPOIRR_DEBUG_BLUR_GAIN___                       (0x05)
-#define ___LSPOIRR_DEBUG_GAINED_BLUR___                     (0x06)
-#define ___LSPOIRR_DEBUG_NO_TONING___                       (0x07)
-#define ___LSPOIRR_DEBUG_NO_INTENSITY___                    (0x08)
-
-#else // LSPOIRR_AUTO_GAIN_ENABLED
-
-#define ___LSPOIRR_DEBUG_RAISE_SHADOWS_FUNCTION_PLOT___     (0x03)
-#define ___LSPOIRR_DEBUG_NO_TONING___                       (0x04)
-#define ___LSPOIRR_DEBUG_NO_INTENSITY___                    (0x05)
-
-#endif // LSPOIRR_AUTO_GAIN_ENABLED
-
-// -------------------------------------------------------------------------- //
-
 #include "ReShade.fxh"
 
 // -------------------------------------------------------------------------- //
@@ -366,9 +446,9 @@ uniform float FrameTime <source = "frametime";>;
 // -------------------------------------------------------------------------- //
 
 sampler2D ReShadeBackBufferSRGBSampler {
-	Texture = ReShade::BackBufferTex;
+    Texture = ReShade::BackBufferTex;
 #if LSPOIRR_SRGB
-	SRGBTexture = true;
+    SRGBTexture = true;
 #endif // LSPOIRR_SRGB
 };
 
@@ -812,8 +892,62 @@ float3 Hash32UV(in float2 uv, in float step) {
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
     
 // -------------------------------------------------------------------------- //
-// overlay blending routines
+// blending routines
 // -------------------------------------------------------------------------- //
+
+#if ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
+
+float MultiplyBlend(in float a, in float b) {
+    return a * b;
+}
+
+float3 MultiplyBlend(in float3 a, in float3 b) {
+    return float3(
+        MultiplyBlend(a.r, b.r),
+        MultiplyBlend(a.g, b.g),
+        MultiplyBlend(a.b, b.b)
+    );
+}
+
+float ScreenBlend(in float a, in float b) {
+    return 1.0 - (1.0 - a) * (1.0 - b);
+}
+
+float3 ScreenBlend(in float3 a, in float3 b) {
+    return float3(
+        ScreenBlend(a.r, b.r),
+        ScreenBlend(a.g, b.g),
+        ScreenBlend(a.b, b.b)
+    );
+}
+
+float DodgeBlend(in float a, in float b) {
+    return a / (1.0 - b);
+}
+
+float3 DodgeBlend(in float3 a, in float3 b) {
+    return float3(
+        DodgeBlend(a.r, b.r),
+        DodgeBlend(a.g, b.g),
+        DodgeBlend(a.b, b.b)
+    );
+}
+
+float DodgeScreenBlend(in float a, in float b, in float pieceWiseBreakPoint) {
+    float t = (b - pieceWiseBreakPoint) / (1.0 - pieceWiseBreakPoint);
+
+    t *= 2.0;
+    t = saturate(t);
+    t = smoothstep(0.0, 1.0, t);
+
+#if 0 // debug interpolant
+    return t;
+#else
+    return lerp(DodgeBlend(a, b), ScreenBlend(a, b), t);
+#endif
+}
+
+#endif // ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
 
 float OverlayBlend(in float a, in float b) {
     [branch]
@@ -831,6 +965,61 @@ float3 OverlayBlend(in float3 a, in float3 b) {
         OverlayBlend(a.b, b.b)
     );
 }
+
+float ScaleOcclusionAndIrradiance(in float occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+    // lerp(0.5, occlusionIrradianceOverlay, xxxxIntensity)
+    return 0.5 + (occlusionIrradianceOverlay - 0.5) * (occlusionIrradianceOverlay < 0.5 ? occlusionIntensity : irradianceIntensity);
+}
+
+float3 ScaleOcclusionAndIrradiance(in float3 occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+    return float3(
+        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.r, occlusionIntensity, irradianceIntensity),
+        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.g, occlusionIntensity, irradianceIntensity),
+        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.b, occlusionIntensity, irradianceIntensity)
+    );
+}
+
+#if ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
+
+float OverlayExtendedBlend(in float a, in float b, in float pieceWiseBreakPoint) {
+    [branch]
+    if (b < pieceWiseBreakPoint) {
+        float normalizer = 1.0 / pieceWiseBreakPoint;
+        return MultiplyBlend(a, b * normalizer);
+
+#if 0
+        return 0;
+#endif
+    } else {
+        float offset = 1.0 - pieceWiseBreakPoint;
+        float normalizer = 1.0 / offset;
+#if 1
+        return ScreenBlend(a, (b - pieceWiseBreakPoint) * normalizer);
+#endif
+
+#if 0
+        return DodgeBlend(a, (b - pieceWiseBreakPoint) * normalizer);
+#endif
+
+#if 0
+        return DodgeScreenBlend(a, (b - pieceWiseBreakPoint) * normalizer, pieceWiseBreakPoint);
+#endif
+
+#if 0
+        return 1;
+#endif
+    }
+}
+
+float3 OverlayExtendedBlend(in float3 a, in float3 b, in float pieceWiseBreakPoint) {
+    return float3(
+        OverlayExtendedBlend(a.r, b.r, pieceWiseBreakPoint),
+        OverlayExtendedBlend(a.g, b.g, pieceWiseBreakPoint),
+        OverlayExtendedBlend(a.b, b.b, pieceWiseBreakPoint)
+    );
+}
+
+#endif // ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
 
 #if LSPOIRR_AUTO_GAIN_ENABLED
 
@@ -951,6 +1140,12 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
         return overlayColor;
     }
 
+    // debug
+    [branch]
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_OCCLUSION_IRRADIANCE_MAP___) {
+        return lerp(color, 1.0 - step(overlayColor, 0.5), 0.65);
+    }
+
 #if LSPOIRR_AUTO_GAIN_ENABLED
 
     // debug
@@ -994,14 +1189,49 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
+    // scale the overlay occlusion and irradiance components independently
+    overlayColor = ScaleOcclusionAndIrradiance(overlayColor, LSPOIrrOcclusionIntensity, LSPOIrrIrradianceIntensity);
+
+    // debug
+    [branch]
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_SCALED_BLUR___) {
+        return overlayColor;
+    }
+
     // overlay the saturated overlay color onto the scene color
+#if ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
+    finalColor = OverlayExtendedBlend(finalColor, overlayColor, LSPOIrrOcclusionIrradianceNeutralPoint);
+#else // ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
     finalColor = OverlayBlend(finalColor, overlayColor);
+#endif // ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
 
     // compute recovery overlay
     float3 recoveryOverlayColor = tex2D(ShortBlurSampler, screenUV).rgb;
     recoveryOverlayColor = SATURATE_COLOR(recoveryOverlayColor, 0.0);
     recoveryOverlayColor = 1.0 - recoveryOverlayColor;
-    recoveryOverlayColor = (recoveryOverlayColor - 0.5) * LSPOIrrShHlRecovery + 0.5;
+
+    // debug
+    [branch]
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_RECOVERY_BLUR___) {
+        return recoveryOverlayColor;
+    }
+
+    // debug
+    [branch]
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_RECOVERY_OCCLUSION_IRRADIANCE_MAP___) {
+        return lerp(color, 1.0 - step(recoveryOverlayColor, 0.5), 0.65);
+    }
+    // scale the recovery overlay
+    recoveryOverlayColor = (recoveryOverlayColor - 0.5) * LSPOIrrOcclusionIrradianceRecovery + 0.5;
+
+    // scale the overlay occlusion and irradiance components independently
+    recoveryOverlayColor = ScaleOcclusionAndIrradiance(recoveryOverlayColor, LSPOIrrIrradianceIntensity, LSPOIrrOcclusionIntensity);
+
+    // debug
+    [branch]
+    if (LSPOIrrDebugType == ___LSPOIRR_DEBUG_SCALED_RECOVERY_BLUR___) {
+        return recoveryOverlayColor;
+    }
 
     // overlay the recovery overlay color onto the scene color  
     finalColor = OverlayBlend(finalColor, recoveryOverlayColor);
