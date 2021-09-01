@@ -1237,6 +1237,16 @@ technique FGFXLSPOIrr <
 
 #endif
 
+#if 0 // store short blur
+
+    pass ShortBlur {
+        VertexShader = PostProcessVS;
+        PixelShader  = CopyVBlurPS;
+        RenderTarget = ShortBlurTex;
+    }
+
+#endif
+
 #if 1 // cascade 2 rectangular
 
     pass HBlurC2R {
@@ -1253,11 +1263,15 @@ technique FGFXLSPOIrr <
 
 #endif
 
+#if 1 // store short blur
+
     pass ShortBlur {
         VertexShader = PostProcessVS;
         PixelShader  = CopyVBlurPS;
         RenderTarget = ShortBlurTex;
     }
+
+#endif
 
 #if 1 // cascade 2 smooth
 
