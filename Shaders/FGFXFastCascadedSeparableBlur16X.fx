@@ -2,7 +2,7 @@
 
 // FGFX::FCSB[16X] - Fast Cascaded Separable Blur [16X]
 // Author  : Alex Tuduran | alex.tuduran@gmail.com | github.com/AlexTuduran
-// Version : 0.6 [ReShade 3.0]
+// Version : 0.7 [ReShade 3.0]
 
 // -------------------------------------------------------------------------- //
 // preprocessor definitions
@@ -55,6 +55,7 @@ uniform int ___ABOUT <
     ui_type = "radio";
     ui_label = " ";
     ui_category = "About";
+    ui_category_closed = true;
     ui_text =
         "-=[ FGFX::FCSB[16X] - Fast Cascaded Separable Blur [16X] ]=-\n"
         "\n"
@@ -472,37 +473,6 @@ technique FGFXFCSB16X <
         "traditional separable Gaussian blur.\n"
         "\n"
 
-        "For reference, the technique performs ~35 times faster than\n"
-        "traditional separable Gaussian blur on a 121 texels radius and\n"
-        "an astonishing ~122 times faster on a 484 texels radius.\n"
-        "\n"
-
-        "The complexity of standard separable Gaussian blur is\n"
-        "O(n), while the complexity of FCSB is O(log(n)), making it\n"
-        "ideal for cases where large smooth blur is required.\n"
-        "\n"
-
-        "In other words, as the radius increases exponentially, the\n"
-        "cost of FCSB increases linearly.\n"
-        "\n"
-
-        "The FCSB16X effect is provided not as an actual usable in-game\n"
-        "effect, but rather as a technique demonstration that can be\n"
-        "used as a performance booster alternative to the classic\n"
-        "separable Gaussian blur in other effects that make use of\n"
-        "blur to achieve their goals.\n"
-        "\n"
-
-        "The 16X refers to the fact that prior to cascading, the\n"
-        "back-buffer is down-sampled 16 times its original size,\n"
-        "yielding a performance boost of 16X compared to cascading on\n"
-        "the full-sized back-buffer.\n"
-        "\n"
-
-        "Even used on the full back-buffer, FCSB is much faster than\n"
-        "standard separable Gaussian blur due to the exhibited\n"
-        "O(log(n)) complexity.\n"
-        "\n"
         "The Fast Cascaded Separable Blur is written by Alex Tuduran.\n";
 > {
 

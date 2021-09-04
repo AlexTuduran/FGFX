@@ -91,6 +91,7 @@ uniform int ___ABOUT <
     ui_type = "radio";
     ui_label = " ";
     ui_category = "About";
+    ui_category_closed = true;
     ui_text =
         "-=[ FGFX::LSPOIrr - Large Scale Perceptual Obscurance and Irradiance ]=-\n"
         "\n"
@@ -376,6 +377,7 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_AUTO_GAIN_ENABLED) <
     ui_type = "radio";
     ui_label = " ";
     ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_category_closed = true;
     ui_text =
         IDENT_TO_STR(LSPOIRR_AUTO_GAIN_ENABLED)
         ":\n- Enables / disables the auto-gain feature. "
@@ -387,6 +389,7 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_AUTO_GAIN_SPEED) <
     ui_type = "radio";
     ui_label = " ";
     ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_category_closed = true;
     ui_text =
         IDENT_TO_STR(LSPOIRR_AUTO_GAIN_SPEED)
         ":\n- Defines how fast the auto-gain adapts to the scenery. "
@@ -398,6 +401,7 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_BLUR_MAX_RECIPROCAL_THRESHOLD) <
     ui_type = "radio";
     ui_label = " ";
     ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_category_closed = true;
     ui_text =
         IDENT_TO_STR(LSPOIRR_BLUR_MAX_RECIPROCAL_THRESHOLD)
         ":\n- Defines the breaking point between the two piecewise functions that make up the compute blur gain function.\n"
@@ -408,6 +412,7 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_CASCADE_3_ON) <
     ui_type = "radio";
     ui_label = " ";
     ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_category_closed = true;
     ui_text =
         IDENT_TO_STR(LSPOIRR_CASCADE_3_ON)
         ":\n- Enables / disables cascade 3 in the Fast Cascaded Separable Blur implementation in order to achieve a much wider blur radius. "
@@ -419,6 +424,7 @@ uniform int MAKE_DESCRIPTION_VAR(___LSPOIRR_SRGB) <
     ui_type = "radio";
     ui_label = " ";
     ui_category = ___CATEGORY_PREPROCESSOR_DEFINITIONS_DESCRIPTIONS___;
+    ui_category_closed = true;
     ui_text =
         IDENT_TO_STR(LSPOIRR_SRGB)
         ":\n- Enables / disables working in sRGB color space. "
@@ -1303,62 +1309,6 @@ technique FGFXLSPOIrr <
         "effect that attempts to inject obscurance and irradiance in the scene at a\n"
         "large scale (low frequency).\n"
         "\n"
-
-        "Due to the fact that the effect operates on the low frequencies of the\n"
-        "input image, the effect often plays just on a perceptual level rather\n"
-        "than being an actual physically correct rendition of scene obscurrance and\n"
-        "irradiance.\n"
-        "\n"
-
-        "* How does it work? *\n"
-        "\n"
-
-        "The concept sitting at the core of the effect is really simple and relies\n"
-        "on some assumptions that more than often are correct. If we take an\n"
-        "arbitrary image, blur it with a large gaussian and then overlay (as in\n"
-        "standard overlay blending operation) the blurred image onto the original\n"
-        "image, we get the illusion that some statistically-correct occlusion and\n"
-        "irradiance shows up in the image.\n"
-        "\n"
-
-        "* Why does it work? *\n"
-        "\n"
-
-        "The effect relies on the statistical fact that if there's a part in the\n"
-        "input image that is predominantly dark, chances are that the entire part\n"
-        "contains objects that obscure each other, reducing the amount of light\n"
-        "radiated in that particular area.\n"
-        "\n"
-
-        "Admittedly, the opposite is also true: If a part of the input image is\n"
-        "predominantly bright, chances are that the objects in that part of the\n"
-        "image have an increased amount of light inter-radiation, as a result of\n"
-        "objects in that part of the image bouncing light to each other.\n"
-        "\n"
-
-        "* What about performance? *\n"
-        "\n"
-
-        "The implementation uses the Fast Cascaded Separable Blur technique,\n"
-        "which is blazing-fast. The entire effect executes in less than 0.35 ms\n"
-        "on a machine with a i7-8700K running at 4.2Ghz CPU and a GTX 1080Ti\n"
-        "running at 2000Mhz GPU in 2560x1440 resolution.\n"
-        "\n"
-
-        "And if you think you don't need the auto-gain feature (by disabling it\n"
-        "in preprocessor definitions), you can cut 0.05 ms and get the total\n"
-        "execution time down to 0.3 ms.\n"
-        "\n"
-
-        "* Where is this effect best placed? *\n"
-        "\n"
-
-        "Since the effect addresses the lighting in the scene, it's best put\n"
-        "after any Global Illumination technique like Ambient Occlusion,\n"
-        "Obscurance, RTGI and before tone-mapping, film grain, color grading\n"
-        "of any sort, bloom, CA or any lens & sensor effects.\n"
-        "\n"
-        
 
         "The Large Scale Perceptual Obscurance and Irradiance is written by\n"
         "Alex Tuduran.\n";
