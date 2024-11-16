@@ -2,7 +2,7 @@
 
 // FGFX::LSPOIrr - Large Scale Perceptual Obscurance and Irradiance
 // Author  : Alex Tuduran | alex.tuduran@gmail.com | github.com/AlexTuduran
-// Version : 0.7 [ReShade 3.0]
+// Version : 0.7.1 [ReShade 3.0]
 
 // -------------------------------------------------------------------------- //
 // preprocessor definitions
@@ -191,6 +191,14 @@ uniform float LSPOIrrIrradianceIntensity < __UNIFORM_SLIDER_FLOAT1
     ui_label = "Irradiance Intensity";
     ui_tooltip = "Adjusts the irradiance intensity of the effect.";
 > = 1.0;
+
+uniform float LSPOIrrOclusionIrradianceThreshold < __UNIFORM_SLIDER_FLOAT1
+    ui_min = 0.004;
+    ui_max = 0.996;
+    ui_category = ___CATEGORY_EFFECT_SETTINGS___;
+    ui_label = "Occlusion/Irradiance Threshold";
+    ui_tooltip = "Adjusts the middle line that determines what occlusion and irradiance affect.";
+> = 0.5;
 
 #if ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
 
@@ -985,6 +993,25 @@ float3 ScaleOcclusionAndIrradiance(in float3 occlusionIrradianceOverlay, in floa
     );
 }
 
+float ScaleOcclusionAndIrradiance2(in float occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+    // lerp(0.5, occlusionIrradianceOverlay, xxxxIntensity)
+    //return 0.5 + (occlusionIrradianceOverlay - 0.5) * (occlusionIrradianceOverlay < 0.5 ? occlusionIntensity : irradianceIntensity);
+	
+	if (occlusionIrradianceOverlay <= LSPOIrrOclusionIrradianceThreshold) {
+		return 0.5 + ((occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / (LSPOIrrOclusionIrradianceThreshold * 2)) * occlusionIntensity;
+	} else {
+		return 0.5 + ((occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / ((1 - LSPOIrrOclusionIrradianceThreshold) * 2)) * irradianceIntensity;
+	}
+}
+
+float3 ScaleOcclusionAndIrradiance2(in float3 occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+    return float3(
+        ScaleOcclusionAndIrradiance2(occlusionIrradianceOverlay.r, occlusionIntensity, irradianceIntensity),
+        ScaleOcclusionAndIrradiance2(occlusionIrradianceOverlay.g, occlusionIntensity, irradianceIntensity),
+        ScaleOcclusionAndIrradiance2(occlusionIrradianceOverlay.b, occlusionIntensity, irradianceIntensity)
+    );
+}
+
 #if ___CUSTOM_OCCLUSSION_IRRADIANCE_NEUTRAL_POINT
 
 float OverlayExtendedBlend(in float a, in float b, in float pieceWiseBreakPoint) {
@@ -1196,7 +1223,7 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
     // scale the overlay occlusion and irradiance components independently
-    overlayColor = ScaleOcclusionAndIrradiance(overlayColor, LSPOIrrOcclusionIntensity, LSPOIrrIrradianceIntensity);
+    overlayColor = ScaleOcclusionAndIrradiance2(overlayColor, LSPOIrrOcclusionIntensity, LSPOIrrIrradianceIntensity);
 
     // debug
     [branch]
