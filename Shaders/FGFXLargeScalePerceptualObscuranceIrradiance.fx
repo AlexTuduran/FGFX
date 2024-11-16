@@ -196,7 +196,7 @@ uniform float LSPOIrrOclusionIrradianceThreshold < __UNIFORM_SLIDER_FLOAT1
     ui_min = 0.004;
     ui_max = 0.996;
     ui_category = ___CATEGORY_EFFECT_SETTINGS___;
-    ui_label = "Occlusion/Irradiance Threshold";
+    ui_label = "Occlusion / Irradiance Threshold";
     ui_tooltip = "Adjusts the middle line that determines what occlusion and irradiance affect.";
 > = 0.5;
 
@@ -230,7 +230,7 @@ uniform float LSPOIrrEffectSaturation < __UNIFORM_SLIDER_FLOAT1
         "\n"
         "Notice this is NOT the final output saturation, but the saturation applied to occlusion and irradiance prior to blending over the color buffer.\n"
         "For the final output saturation see 'Saturation' in the 'Toning Settings' category.";
-> = 0.0;
+> = 0.1;
 
 uniform float LSPOIrrOcclusionIrradianceRecovery < __UNIFORM_SLIDER_FLOAT1
     ui_min = 0.0;
@@ -980,20 +980,20 @@ float3 OverlayBlend(in float3 a, in float3 b) {
     );
 }
 
-float ScaleOcclusionAndIrradiance(in float occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+float ThresholdedScaleOcclusionAndIrradiance(in float occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
     // lerp(0.5, occlusionIrradianceOverlay, xxxxIntensity)
     return 0.5 + (occlusionIrradianceOverlay - 0.5) * (occlusionIrradianceOverlay < 0.5 ? occlusionIntensity : irradianceIntensity);
 }
 
-float3 ScaleOcclusionAndIrradiance(in float3 occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+float3 ThresholdedScaleOcclusionAndIrradiance(in float3 occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
     return float3(
-        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.r, occlusionIntensity, irradianceIntensity),
-        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.g, occlusionIntensity, irradianceIntensity),
-        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.b, occlusionIntensity, irradianceIntensity)
+        ThresholdedScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.r, occlusionIntensity, irradianceIntensity),
+        ThresholdedScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.g, occlusionIntensity, irradianceIntensity),
+        ThresholdedScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.b, occlusionIntensity, irradianceIntensity)
     );
 }
 
-float ScaleOcclusionAndIrradiance2(in float occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+float ScaleOcclusionAndIrradiance(in float occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
     // lerp(0.5, occlusionIrradianceOverlay, xxxxIntensity)
     //return 0.5 + (occlusionIrradianceOverlay - 0.5) * (occlusionIrradianceOverlay < 0.5 ? occlusionIntensity : irradianceIntensity);
 	
@@ -1004,11 +1004,11 @@ float ScaleOcclusionAndIrradiance2(in float occlusionIrradianceOverlay, in float
 	}
 }
 
-float3 ScaleOcclusionAndIrradiance2(in float3 occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
+float3 ScaleOcclusionAndIrradiance(in float3 occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
     return float3(
-        ScaleOcclusionAndIrradiance2(occlusionIrradianceOverlay.r, occlusionIntensity, irradianceIntensity),
-        ScaleOcclusionAndIrradiance2(occlusionIrradianceOverlay.g, occlusionIntensity, irradianceIntensity),
-        ScaleOcclusionAndIrradiance2(occlusionIrradianceOverlay.b, occlusionIntensity, irradianceIntensity)
+        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.r, occlusionIntensity, irradianceIntensity),
+        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.g, occlusionIntensity, irradianceIntensity),
+        ScaleOcclusionAndIrradiance(occlusionIrradianceOverlay.b, occlusionIntensity, irradianceIntensity)
     );
 }
 
@@ -1223,7 +1223,7 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
 #endif // LSPOIRR_AUTO_GAIN_ENABLED
 
     // scale the overlay occlusion and irradiance components independently
-    overlayColor = ScaleOcclusionAndIrradiance2(overlayColor, LSPOIrrOcclusionIntensity, LSPOIrrIrradianceIntensity);
+    overlayColor = ScaleOcclusionAndIrradiance(overlayColor, LSPOIrrOcclusionIntensity, LSPOIrrIrradianceIntensity);
 
     // debug
     [branch]
@@ -1258,7 +1258,7 @@ float3 LSPOIrrPS(in float4 pos : SV_Position, in float2 texcoord : TEXCOORD) : C
     recoveryOverlayColor = (recoveryOverlayColor - 0.5) * LSPOIrrOcclusionIrradianceRecovery + 0.5;
 
     // scale the overlay occlusion and irradiance components independently
-    recoveryOverlayColor = ScaleOcclusionAndIrradiance(recoveryOverlayColor, LSPOIrrIrradianceIntensity, LSPOIrrOcclusionIntensity);
+    recoveryOverlayColor = ThresholdedScaleOcclusionAndIrradiance(recoveryOverlayColor, LSPOIrrIrradianceIntensity, LSPOIrrOcclusionIntensity);
 
     // debug
     [branch]
