@@ -998,9 +998,9 @@ float ThresholdedScaleOcclusionAndIrradiance(in float occlusionIrradianceOverlay
     //return 0.5 + (occlusionIrradianceOverlay - 0.5) * (occlusionIrradianceOverlay < 0.5 ? occlusionIntensity : irradianceIntensity);
 	
 	if (occlusionIrradianceOverlay <= LSPOIrrOclusionIrradianceThreshold) {
-		return 0.5 + ((occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / (LSPOIrrOclusionIrradianceThreshold * 2)) * occlusionIntensity;
+		return 0.5 + occlusionIntensity * (occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / (LSPOIrrOclusionIrradianceThreshold * 2);
 	} else {
-		return 0.5 + ((occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / ((1 - LSPOIrrOclusionIrradianceThreshold) * 2)) * irradianceIntensity;
+		return 0.5 + irradianceIntensity * (occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / ((1 - LSPOIrrOclusionIrradianceThreshold) * 2);
 	}
 }
 
