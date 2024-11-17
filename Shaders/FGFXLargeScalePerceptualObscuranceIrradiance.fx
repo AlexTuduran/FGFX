@@ -995,13 +995,13 @@ float3 ScaleOcclusionAndIrradiance(in float3 occlusionIrradianceOverlay, in floa
 
 float ThresholdedScaleOcclusionAndIrradiance(in float occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
     // lerp(0.5, occlusionIrradianceOverlay, xxxxIntensity)
-    //return 0.5 + (occlusionIrradianceOverlay - 0.5) * (occlusionIrradianceOverlay < 0.5 ? occlusionIntensity : irradianceIntensity);
-	
-	if (occlusionIrradianceOverlay <= LSPOIrrOclusionIrradianceThreshold) {
-		return 0.5 + occlusionIntensity * (occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / (LSPOIrrOclusionIrradianceThreshold * 2);
-	} else {
-		return 0.5 + irradianceIntensity * (occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / ((1 - LSPOIrrOclusionIrradianceThreshold) * 2);
-	}
+    // return 0.5 + (occlusionIrradianceOverlay - 0.5) * (occlusionIrradianceOverlay < 0.5 ? occlusionIntensity : irradianceIntensity);
+
+    if (occlusionIrradianceOverlay <= LSPOIrrOclusionIrradianceThreshold) {
+        return 0.5 + occlusionIntensity * (occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / (LSPOIrrOclusionIrradianceThreshold * 2);
+    } else {
+        return 0.5 + irradianceIntensity * (occlusionIrradianceOverlay - LSPOIrrOclusionIrradianceThreshold) / ((1 - LSPOIrrOclusionIrradianceThreshold) * 2);
+    }
 }
 
 float3 ThresholdedScaleOcclusionAndIrradiance(in float3 occlusionIrradianceOverlay, in float occlusionIntensity, in float irradianceIntensity) {
